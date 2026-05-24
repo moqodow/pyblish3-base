@@ -5,6 +5,7 @@
 *.egg-info
 dist
 *.pyc
+*.pyr
 cover
 .coverage
 docs/_*
