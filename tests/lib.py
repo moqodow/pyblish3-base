@@ -78,3 +78,14 @@ def tempdir():
         yield tempdir
     finally:
         shutil.rmtree(tempdir)
+
+
+def unittest_helper():
+    """Provide unittest.Testcase instance"""
+    import unittest
+
+    class Helper(unittest.TestCase):
+        def runTest(self):
+            pass
+
+    return Helper()
