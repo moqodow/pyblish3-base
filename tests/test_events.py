@@ -1,6 +1,6 @@
 import pyblish.api
 import pyblish.util
-from nose.tools import (
+from nose2.tools.decorators import (
     with_setup,
 )
 from . import lib

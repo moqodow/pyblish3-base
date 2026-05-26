@@ -5,9 +5,9 @@ import sys
 path = os.path.dirname(__file__)
 sys.path.insert(0, path)
 
-import nose
+import nose2
 
 if __name__ == '__main__':
     argv = sys.argv[:]
-    argv.extend(['-c', '.noserc'])
-    nose.main(argv=argv)
+    argv.extend(['-c', 'nose2.cfg'])
+    nose2.main(argv=argv)

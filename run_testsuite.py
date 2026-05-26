@@ -6,7 +6,7 @@ import warnings
 path = os.path.dirname(__file__)
 sys.path.insert(0, path)
 
-import nose
+import nose2
 from pyblish.vendor import mock
 
 warnings.warn = mock.MagicMock()
@@ -14,5 +14,5 @@ warnings.warn = mock.MagicMock()
 
 if __name__ == '__main__':
     argv = sys.argv[:]
-    argv.extend(['--exclude=vendor', '--with-doctest', '--verbose'])
-    nose.main(argv=argv)
+    argv.extend(['--exclude=vendor'])
+    nose2.main(argv=argv)

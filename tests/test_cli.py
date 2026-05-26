@@ -1,27 +1,31 @@
 import os
-import sys
 import shutil
 import tempfile
 
 import pyblish
 import pyblish.cli
 import pyblish.api
-from nose.tools import (
+from nose2.tools.decorators import (
     with_setup,
-    assert_equals,
+    with_teardown
 )
 from pyblish.vendor.click.testing import CliRunner
 from . import lib
 
-self = sys.modules[__name__]
+
+_tempdir = ""
 
 
 def setup():
-    self.tempdir = tempfile.mkdtemp()
+    lib.setup()
+    global _tempdir
+    _tempdir = tempfile.mkdtemp()
 
 
 def teardown():
-    shutil.rmtree(self.tempdir)
+    lib.tempdir()
+    global _tempdir
+    shutil.rmtree(_tempdir)
 
 
 def ctx():
@@ -51,7 +55,8 @@ def test_visualise_environment_paths():
             os.environ["PYBLISHPLUGINPATH"] = current_path
 
 
-@with_setup(lib.setup_empty, lib.teardown)
+@with_setup(lib.setup_empty)
+@with_teardown(lib.teardown)
 def test_publishing():
     """Basic publishing works"""
 
@@ -83,7 +88,8 @@ def test_publishing():
     assert count["#"] == 111, count
 
 
-@with_setup(lib.setup, lib.teardown)
+@with_setup(lib.setup)
+@with_teardown(lib.teardown)
 def test_environment_host_registration():
     """Host registration from PYBLISH_HOSTS works"""
 
@@ -129,11 +135,13 @@ def test_environment_host_registration():
     assert count["#"] == 11, count
 
 
-@with_setup(lib.setup, lib.teardown)
+@with_setup(setup)
+@with_teardown(teardown)
 def test_show_gui():
     """Showing GUI through cli works"""
 
-    with tempfile.NamedTemporaryFile(dir=self.tempdir,
+    print(f"tempdir is: {repr(_tempdir)}")
+    with tempfile.NamedTemporaryFile(dir=_tempdir,
                                      delete=False,
                                      suffix=".py") as f:
         module_name = os.path.basename(f.name)[:-3]
@@ -146,7 +154,7 @@ if __name__ == '__main__':
 """)
 
     pythonpath = os.pathsep.join([
-        self.tempdir,
+        _tempdir,
         os.environ.get("PYTHONPATH", "")
     ])
 
@@ -158,16 +166,16 @@ if __name__ == '__main__':
         env={"PYTHONPATH": pythonpath}
     )
 
-    assert_equals(result.output.splitlines()[-1].rstrip(),
-                  "Mock GUI shown successfully")
-    assert_equals(result.exit_code, 0)
+    assert result.output.splitlines()[-1].rstrip() == "Mock GUI shown successfully"
+    assert result.exit_code == 0
 
 
-@with_setup(lib.setup, lib.teardown)
+@with_setup(setup)
+@with_teardown(teardown)
 def test_uses_gui_from_env():
     """Uses gui from environment var works"""
 
-    with tempfile.NamedTemporaryFile(dir=self.tempdir,
+    with tempfile.NamedTemporaryFile(dir=_tempdir,
                                      delete=False,
                                      suffix=".py") as f:
         module_name = os.path.basename(f.name)[:-3]
@@ -180,7 +188,7 @@ if __name__ == '__main__':
 """)
 
     pythonpath = os.pathsep.join([
-        self.tempdir,
+        _tempdir,
         os.environ.get("PYTHONPATH", "")
     ])
 
@@ -193,16 +201,16 @@ if __name__ == '__main__':
         }
     )
 
-    assert_equals(result.output.splitlines()[-1].rstrip(),
-                  "Mock GUI shown successfully")
-    assert_equals(result.exit_code, 0)
+    assert result.output.splitlines()[-1].rstrip() == "Mock GUI shown successfully"
+    assert result.exit_code == 0
 
 
-@with_setup(lib.setup, lib.teardown)
+@with_setup(setup)
+@with_teardown(teardown)
 def test_passing_data_to_gui():
     """Passing data to GUI works"""
 
-    with tempfile.NamedTemporaryFile(dir=self.tempdir,
+    with tempfile.NamedTemporaryFile(dir=_tempdir,
                                      delete=False,
                                      suffix=".py") as f:
         module_name = os.path.basename(f.name)[:-3]
@@ -218,7 +226,7 @@ if __name__ == '__main__':
 """)
 
     pythonpath = os.pathsep.join([
-        self.tempdir,
+        _tempdir,
         os.environ.get("PYTHONPATH", "")
     ])
 
@@ -231,17 +239,17 @@ if __name__ == '__main__':
         env={"PYTHONPATH": pythonpath}
     )
 
-    assert_equals(result.output.splitlines()[-1].rstrip(),
-                  "Data passed successfully")
-    assert_equals(result.exit_code, 0)
+    assert result.output.splitlines()[-1].rstrip() == "Data passed successfully"
+    assert result.exit_code == 0
 
 
-@with_setup(lib.setup, lib.teardown)
+@with_setup(setup)
+@with_teardown(teardown)
 def test_set_targets():
     """Setting targets works"""
 
     pythonpath = os.pathsep.join([
-        self.tempdir,
+        _tempdir,
         os.environ.get("PYTHONPATH", "")
     ])
 
@@ -277,11 +285,12 @@ def test_set_targets():
     assert count["#"] == 1, count
 
 
-@with_setup(lib.setup, lib.teardown)
+@with_setup(setup)
+@with_teardown(teardown)
 def test_set_targets_gui():
     """Setting targets with gui"""
 
-    with tempfile.NamedTemporaryFile(dir=self.tempdir,
+    with tempfile.NamedTemporaryFile(dir=_tempdir,
                                      delete=False,
                                      suffix=".py") as f:
         module_name = os.path.basename(f.name)[:-3]
@@ -297,7 +306,7 @@ if __name__ == '__main__':
 """)
 
     pythonpath = os.pathsep.join([
-        self.tempdir,
+        _tempdir,
         os.environ.get("PYTHONPATH", "")
     ])
 
@@ -309,5 +318,5 @@ if __name__ == '__main__':
                                  "PYBLISH_TARGETS": "imagesequence"})
 
     result = results.output.splitlines()[-1].rstrip()
-    assert_equals(result, "imagesequence")
-    assert_equals(results.exit_code, 0)
+    assert result == "imagesequence"
+    assert results.exit_code == 0
