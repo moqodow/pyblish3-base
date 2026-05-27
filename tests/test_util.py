@@ -2,7 +2,9 @@ import os
 
 from . import lib
 
-from pyblish import api, util
+import pyblish.api
+import pyblish.util
+
 from nose2.tools.decorators import (
     with_setup,
     with_teardown
@@ -18,22 +20,22 @@ def test_convenience_plugins_argument():
 
     count = {"#": 0}
 
-    class PluginA(api.ContextPlugin):
-        order = api.CollectorOrder
+    class PluginA(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
 
         def process(self, context):
             count["#"] += 1
 
-    class PluginB(api.ContextPlugin):
-        order = api.CollectorOrder
+    class PluginB(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
 
         def process(self, context):
             count["#"] += 10
 
     assert count["#"] == 0
 
-    api.register_plugin(PluginA)
-    util._convenience(plugins=[PluginB], order=0.5)
+    pyblish.api.register_plugin(PluginA)
+    pyblish.util._convenience(plugins=[PluginB], order=0.5)
 
     assert count["#"] == 10, count
 
@@ -45,40 +47,40 @@ def test_convenience_functions():
 
     count = {"#": 0}
 
-    class Collector(api.ContextPlugin):
-        order = api.CollectorOrder
+    class Collector(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
 
         def process(self, context):
             context.create_instance("MyInstance")
             count["#"] += 1
 
-    class Validator(api.InstancePlugin):
-        order = api.ValidatorOrder
+    class Validator(pyblish.api.InstancePlugin):
+        order = pyblish.api.ValidatorOrder
 
         def process(self, instance):
             count["#"] += 10
 
-    class Extractor(api.InstancePlugin):
-        order = api.ExtractorOrder
+    class Extractor(pyblish.api.InstancePlugin):
+        order = pyblish.api.ExtractorOrder
 
         def process(self, instance):
             count["#"] += 100
 
-    class Integrator(api.ContextPlugin):
-        order = api.IntegratorOrder
+    class Integrator(pyblish.api.ContextPlugin):
+        order = pyblish.api.IntegratorOrder
 
         def process(self, instance):
             count["#"] += 1000
 
-    class PostIntegrator(api.ContextPlugin):
-        order = api.IntegratorOrder + 0.1
+    class PostIntegrator(pyblish.api.ContextPlugin):
+        order = pyblish.api.IntegratorOrder + 0.1
 
         def process(self, instance):
             count["#"] += 10000
 
-    class NotCVEI(api.ContextPlugin):
+    class NotCVEI(pyblish.api.ContextPlugin):
         """This plug-in is too far away from Integration to qualify as CVEI"""
-        order = api.IntegratorOrder + 2.0
+        order = pyblish.api.IntegratorOrder + 2.0
 
         def process(self, instance):
             count["#"] += 100000
@@ -91,21 +93,21 @@ def test_convenience_functions():
                    Integrator,
                    PostIntegrator,
                    NotCVEI):
-        api.register_plugin(Plugin)
+        pyblish.api.register_plugin(Plugin)
 
-    context = util.collect()
+    context = pyblish.util.collect()
 
     assert count["#"] == 1
 
-    util.validate(context)
+    pyblish.util.validate(context)
 
     assert count["#"] == 11
 
-    util.extract(context)
+    pyblish.util.extract(context)
 
     assert count["#"] == 111
 
-    util.integrate(context)
+    pyblish.util.integrate(context)
 
     assert count["#"] == 11111
 
@@ -122,25 +124,25 @@ def test_multiple_instance_util_publish():
 
     count = {"#": 0}
 
-    class MyContextCollector(api.ContextPlugin):
-        order = api.CollectorOrder
+    class MyContextCollector(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
 
         def process(self, context):
             context.create_instance("A")
             context.create_instance("B")
             count["#"] += 1
 
-    class MyInstancePluginCollector(api.InstancePlugin):
-        order = api.CollectorOrder + 0.1
+    class MyInstancePluginCollector(pyblish.api.InstancePlugin):
+        order = pyblish.api.CollectorOrder + 0.1
 
         def process(self, instance):
             count["#"] += 1
 
-    api.register_plugin(MyContextCollector)
-    api.register_plugin(MyInstancePluginCollector)
+    pyblish.api.register_plugin(MyContextCollector)
+    pyblish.api.register_plugin(MyInstancePluginCollector)
 
     # Ensure it runs without errors
-    util.publish()
+    pyblish.util.publish()
 
     assert count["#"] == 3
 
@@ -152,8 +154,8 @@ def test_modify_context_during_CVEI():
 
     count = {"#": 0}
 
-    class MyCollector(api.ContextPlugin):
-        order = api.CollectorOrder
+    class MyCollector(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
 
         def process(self, context):
             camera = context.create_instance("MyCamera")
@@ -164,33 +166,33 @@ def test_modify_context_during_CVEI():
 
             count["#"] += 1
 
-    class MyValidator(api.InstancePlugin):
-        order = api.ValidatorOrder
+    class MyValidator(pyblish.api.InstancePlugin):
+        order = pyblish.api.ValidatorOrder
 
         def process(self, instance):
             count["#"] += 10
 
-    api.register_plugin(MyCollector)
-    api.register_plugin(MyValidator)
+    pyblish.api.register_plugin(MyCollector)
+    pyblish.api.register_plugin(MyValidator)
 
-    context = api.Context()
+    context = pyblish.api.Context()
 
     assert count["#"] == 0, count
 
-    util.collect(context)
+    pyblish.util.collect(context)
 
     assert count["#"] == 1, count
 
     context[:] = filter(lambda i: i.data["family"] == "camera", context)
 
-    util.validate(context)
+    pyblish.util.validate(context)
 
     # Only model remains
     assert count["#"] == 11, count
 
     # No further processing occurs.
-    util.extract(context)
-    util.integrate(context)
+    pyblish.util.extract(context)
+    pyblish.util.integrate(context)
 
     assert count["#"] == 11, count
 
@@ -204,38 +206,38 @@ def test_environment_host_registration():
     hosts = ["test1", "test2"]
 
     # Test single hosts
-    class SingleHostCollector(api.ContextPlugin):
-        order = api.CollectorOrder
+    class SingleHostCollector(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
         host = hosts[0]
 
         def process(self, context):
             count["#"] += 1
 
-    api.register_plugin(SingleHostCollector)
+    pyblish.api.register_plugin(SingleHostCollector)
 
-    context = api.Context()
+    context = pyblish.api.Context()
 
     os.environ["PYBLISH_HOSTS"] = "test1"
-    util.collect(context)
+    pyblish.util.collect(context)
 
     assert count["#"] == 1, count
 
     # Test multiple hosts
-    api.deregister_all_plugins()
+    pyblish.api.deregister_all_plugins()
 
-    class MultipleHostsCollector(api.ContextPlugin):
-        order = api.CollectorOrder
+    class MultipleHostsCollector(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
         host = hosts
 
         def process(self, context):
             count["#"] += 10
 
-    api.register_plugin(MultipleHostsCollector)
+    pyblish.api.register_plugin(MultipleHostsCollector)
 
-    context = api.Context()
+    context = pyblish.api.Context()
 
     os.environ["PYBLISH_HOSTS"] = os.pathsep.join(hosts)
-    util.collect(context)
+    pyblish.util.collect(context)
 
     assert count["#"] == 11, count
 
@@ -247,15 +249,15 @@ def test_publishing_explicit_targets():
 
     count = {"#": 0}
 
-    class plugin(api.ContextPlugin):
+    class plugin(pyblish.api.ContextPlugin):
         targets = ["custom"]
 
         def process(self, context):
             count["#"] += 1
 
-    api.register_plugin(plugin)
+    pyblish.api.register_plugin(plugin)
 
-    util.publish(targets=["custom"])
+    pyblish.util.publish(targets=["custom"])
 
     assert count["#"] == 1, count
 
@@ -265,29 +267,29 @@ def test_publishing_explicit_targets_with_global():
 
     count = {"#": 0}
 
-    class Plugin1(api.ContextPlugin):
+    class Plugin1(pyblish.api.ContextPlugin):
         targets = ["custom"]
 
         def process(self, context):
             count["#"] += 1
 
-    class Plugin2(api.ContextPlugin):
+    class Plugin2(pyblish.api.ContextPlugin):
         targets = ["foo"]
 
         def process(self, context):
             count["#"] += 10
 
-    api.register_target("foo")
-    api.register_target("custom")
-    api.register_plugin(Plugin1)
-    api.register_plugin(Plugin2)
+    pyblish.api.register_target("foo")
+    pyblish.api.register_target("custom")
+    pyblish.api.register_plugin(Plugin1)
+    pyblish.api.register_plugin(Plugin2)
 
-    util.publish(targets=["custom"])
+    pyblish.util.publish(targets=["custom"])
 
     assert count["#"] == 1, count
-    assert api.registered_targets() == ["foo", "custom"]
+    assert pyblish.api.registered_targets() == ["foo", "custom"]
 
-    api.deregister_all_targets()
+    pyblish.api.deregister_all_targets()
 
 
 @with_setup(lib.setup)
@@ -295,9 +297,9 @@ def test_publishing_explicit_targets_with_global():
 def test_per_session_targets():
     """Register targets per session works"""
 
-    util.publish(targets=["custom"])
+    pyblish.util.publish(targets=["custom"])
 
-    registered_targets = api.registered_targets()
+    registered_targets = pyblish.api.registered_targets()
     assert registered_targets == [], registered_targets
 
 
@@ -308,16 +310,16 @@ def test_publishing_collectors():
 
     count = {"#": 0}
 
-    class plugin(api.ContextPlugin):
-        order = api.CollectorOrder
+    class plugin(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
         targets = ["custom"]
 
         def process(self, context):
             count["#"] += 1
 
-    api.register_plugin(plugin)
+    pyblish.api.register_plugin(plugin)
 
-    util.collect(targets=["custom"])
+    pyblish.util.collect(targets=["custom"])
 
     assert count["#"] == 1, count
 
@@ -329,16 +331,16 @@ def test_publishing_validators():
 
     count = {"#": 0}
 
-    class plugin(api.ContextPlugin):
-        order = api.ValidatorOrder
+    class plugin(pyblish.api.ContextPlugin):
+        order = pyblish.api.ValidatorOrder
         targets = ["custom"]
 
         def process(self, context):
             count["#"] += 1
 
-    api.register_plugin(plugin)
+    pyblish.api.register_plugin(plugin)
 
-    util.validate(targets=["custom"])
+    pyblish.util.validate(targets=["custom"])
 
     assert count["#"] == 1, count
 
@@ -350,16 +352,16 @@ def test_publishing_extractors():
 
     count = {"#": 0}
 
-    class plugin(api.ContextPlugin):
-        order = api.ExtractorOrder
+    class plugin(pyblish.api.ContextPlugin):
+        order = pyblish.api.ExtractorOrder
         targets = ["custom"]
 
         def process(self, context):
             count["#"] += 1
 
-    api.register_plugin(plugin)
+    pyblish.api.register_plugin(plugin)
 
-    util.extract(targets=["custom"])
+    pyblish.util.extract(targets=["custom"])
 
     assert count["#"] == 1, count
 
@@ -371,16 +373,16 @@ def test_publishing_integrators():
 
     count = {"#": 0}
 
-    class plugin(api.ContextPlugin):
-        order = api.IntegratorOrder
+    class plugin(pyblish.api.ContextPlugin):
+        order = pyblish.api.IntegratorOrder
         targets = ["custom"]
 
         def process(self, context):
             count["#"] += 1
 
-    api.register_plugin(plugin)
+    pyblish.api.register_plugin(plugin)
 
-    util.integrate(targets=["custom"])
+    pyblish.util.integrate(targets=["custom"])
 
     assert count["#"] == 1, count
 
@@ -390,12 +392,12 @@ def test_publishing_integrators():
 def test_progress_existence():
     """Progress data member exists"""
 
-    class plugin(api.ContextPlugin):
+    class plugin(pyblish.api.ContextPlugin):
         pass
 
-    api.register_plugin(plugin)
+    pyblish.api.register_plugin(plugin)
 
-    result = next(util.publish_iter())
+    result = next(pyblish.util.publish_iter())
 
     assert "progress" in result, result
 
@@ -405,16 +407,16 @@ def test_progress_existence():
 def test_publish_iter_increment_progress():
     """Publish iteration increments progress"""
 
-    class pluginA(api.ContextPlugin):
+    class pluginA(pyblish.api.ContextPlugin):
         pass
 
-    class pluginB(api.ContextPlugin):
+    class pluginB(pyblish.api.ContextPlugin):
         pass
 
-    api.register_plugin(pluginA)
-    api.register_plugin(pluginB)
+    pyblish.api.register_plugin(pluginA)
+    pyblish.api.register_plugin(pluginB)
 
-    iterator = util.publish_iter()
+    iterator = pyblish.util.publish_iter()
 
     pluginA_progress = next(iterator)["progress"]
     pluginB_progress = next(iterator)["progress"]

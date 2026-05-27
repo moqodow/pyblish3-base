@@ -1,8 +1,8 @@
-from pyblish import api
+import pyblish.api
 
 
-@api.log
-class ValidateInstances123(api.Validator):
+@pyblish.api.log
+class ValidateInstances123(pyblish.api.Validator):
     hosts = ['*']
     families = ['*']
     version = (0, 0, 1)

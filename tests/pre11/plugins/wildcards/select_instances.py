@@ -1,8 +1,8 @@
-from pyblish import api
+import pyblish.api
 
 
-@api.log
-class SelectInstances(api.Selector):
+@pyblish.api.log
+class SelectInstances(pyblish.api.Selector):
     hosts = ['*']
     version = (0, 0, 1)
 
