@@ -1,5 +1,4 @@
 import os
-import shutil
 import tempfile
 
 import pyblish
@@ -11,21 +10,6 @@ from nose2.tools.decorators import (
 )
 from pyblish.vendor.click.testing import CliRunner
 from . import lib
-
-
-_tempdir = ""
-
-
-def setup():
-    lib.setup()
-    global _tempdir
-    _tempdir = tempfile.mkdtemp()
-
-
-def teardown():
-    lib.tempdir()
-    global _tempdir
-    shutil.rmtree(_tempdir)
 
 
 def ctx():
@@ -135,17 +119,17 @@ def test_environment_host_registration():
     assert count["#"] == 11, count
 
 
-@with_setup(setup)
-@with_teardown(teardown)
+@with_setup(lib.setup)
+@with_teardown(lib.teardown)
 def test_show_gui():
     """Showing GUI through cli works"""
 
-    print(f"tempdir is: {repr(_tempdir)}")
-    with tempfile.NamedTemporaryFile(dir=_tempdir,
-                                     delete=False,
-                                     suffix=".py") as f:
-        module_name = os.path.basename(f.name)[:-3]
-        f.write(b"""\
+    with lib.tempdir() as tempdir:
+        with tempfile.NamedTemporaryFile(dir=tempdir,
+                                         delete=False,
+                                         suffix=".py") as f:
+            module_name = os.path.basename(f.name)[:-3]
+            f.write(b"""\
 def show():
     print("Mock GUI shown successfully")
 
@@ -153,33 +137,34 @@ if __name__ == '__main__':
     show()
 """)
 
-    pythonpath = os.pathsep.join([
-        _tempdir,
-        os.environ.get("PYTHONPATH", "")
-    ])
+        pythonpath = os.pathsep.join([
+            tempdir,
+            os.environ.get("PYTHONPATH", "")
+        ])
 
-    print(module_name)
+        print(module_name)
 
-    runner = CliRunner()
-    result = runner.invoke(
-        pyblish.cli.main, ["gui", module_name],
-        env={"PYTHONPATH": pythonpath}
-    )
+        runner = CliRunner()
+        result = runner.invoke(
+            pyblish.cli.main, ["gui", module_name],
+            env={"PYTHONPATH": pythonpath}
+        )
 
-    assert result.output.splitlines()[-1].rstrip() == "Mock GUI shown successfully"
-    assert result.exit_code == 0
+        assert result.output.splitlines()[-1].rstrip() == "Mock GUI shown successfully"
+        assert result.exit_code == 0
 
 
-@with_setup(setup)
-@with_teardown(teardown)
+@with_setup(lib.setup)
+@with_teardown(lib.teardown)
 def test_uses_gui_from_env():
     """Uses gui from environment var works"""
-
-    with tempfile.NamedTemporaryFile(dir=_tempdir,
-                                     delete=False,
-                                     suffix=".py") as f:
-        module_name = os.path.basename(f.name)[:-3]
-        f.write(b"""\
+    
+    with lib.tempdir() as tempdir:
+        with tempfile.NamedTemporaryFile(dir=tempdir,
+                                         delete=False,
+                                         suffix=".py") as f:
+            module_name = os.path.basename(f.name)[:-3]
+            f.write(b"""\
 def show():
     print("Mock GUI shown successfully")
 
@@ -187,34 +172,35 @@ if __name__ == '__main__':
     show()
 """)
 
-    pythonpath = os.pathsep.join([
-        _tempdir,
-        os.environ.get("PYTHONPATH", "")
-    ])
+        pythonpath = os.pathsep.join([
+            tempdir,
+            os.environ.get("PYTHONPATH", "")
+        ])
 
-    runner = CliRunner()
-    result = runner.invoke(
-        pyblish.cli.main, ["gui"],
-        env={
-            "PYTHONPATH": pythonpath,
-            "PYBLISH_GUI": module_name
-        }
-    )
+        runner = CliRunner()
+        result = runner.invoke(
+            pyblish.cli.main, ["gui"],
+            env={
+                "PYTHONPATH": pythonpath,
+                "PYBLISH_GUI": module_name
+            }
+        )
 
-    assert result.output.splitlines()[-1].rstrip() == "Mock GUI shown successfully"
-    assert result.exit_code == 0
+        assert result.output.splitlines()[-1].rstrip() == "Mock GUI shown successfully"
+        assert result.exit_code == 0
 
 
-@with_setup(setup)
-@with_teardown(teardown)
+@with_setup(lib.setup)
+@with_teardown(lib.teardown)
 def test_passing_data_to_gui():
     """Passing data to GUI works"""
 
-    with tempfile.NamedTemporaryFile(dir=_tempdir,
-                                     delete=False,
-                                     suffix=".py") as f:
-        module_name = os.path.basename(f.name)[:-3]
-        f.write(b"""\
+    with lib.tempdir() as tempdir:
+        with tempfile.NamedTemporaryFile(dir=tempdir,
+                                         delete=False,
+                                         suffix=".py") as f:
+            module_name = os.path.basename(f.name)[:-3]
+            f.write(b"""\
 from pyblish import util
 
 def show():
@@ -225,76 +211,78 @@ if __name__ == '__main__':
     show()
 """)
 
-    pythonpath = os.pathsep.join([
-        _tempdir,
-        os.environ.get("PYTHONPATH", "")
-    ])
+        pythonpath = os.pathsep.join([
+            tempdir,
+            os.environ.get("PYTHONPATH", "")
+        ])
 
-    runner = CliRunner()
-    result = runner.invoke(
-        pyblish.cli.main, [
-            "--data", "passedFromTest", "Data passed successfully",
-            "gui", module_name
-        ],
-        env={"PYTHONPATH": pythonpath}
-    )
+        runner = CliRunner()
+        result = runner.invoke(
+            pyblish.cli.main, [
+                "--data", "passedFromTest", "Data passed successfully",
+                "gui", module_name
+            ],
+            env={"PYTHONPATH": pythonpath}
+        )
 
-    assert result.output.splitlines()[-1].rstrip() == "Data passed successfully"
-    assert result.exit_code == 0
+        assert result.output.splitlines()[-1].rstrip() == "Data passed successfully"
+        assert result.exit_code == 0
 
 
-@with_setup(setup)
-@with_teardown(teardown)
+@with_setup(lib.setup)
+@with_teardown(lib.teardown)
 def test_set_targets():
     """Setting targets works"""
 
-    pythonpath = os.pathsep.join([
-        _tempdir,
-        os.environ.get("PYTHONPATH", "")
-    ])
+    with lib.tempdir() as tempdir:
+        pythonpath = os.pathsep.join([
+            tempdir,
+            os.environ.get("PYTHONPATH", "")
+        ])
 
-    count = {"#": 0}
+        count = {"#": 0}
 
-    class CollectorOne(pyblish.api.ContextPlugin):
-        order = pyblish.api.CollectorOrder
-        targets = ["imagesequence"]
+        class CollectorOne(pyblish.api.ContextPlugin):
+            order = pyblish.api.CollectorOrder
+            targets = ["imagesequence"]
 
-        def process(self, context):
-            self.log.warning("Running {0}".format(self.targets))
-            count["#"] += 1
-            context.create_instance("MyInstance")
+            def process(self, context):
+                self.log.warning("Running {0}".format(self.targets))
+                count["#"] += 1
+                context.create_instance("MyInstance")
 
-    class CollectorTwo(pyblish.api.ContextPlugin):
-        order = pyblish.api.CollectorOrder
-        targets = ["model"]
+        class CollectorTwo(pyblish.api.ContextPlugin):
+            order = pyblish.api.CollectorOrder
+            targets = ["model"]
 
-        def process(self, context):
-            self.log.warning("Running {0}".format(self.targets))
-            count["#"] += 2
-            context.create_instance("MyInstance")
+            def process(self, context):
+                self.log.warning("Running {0}".format(self.targets))
+                count["#"] += 2
+                context.create_instance("MyInstance")
 
-    pyblish.api.register_plugin(CollectorOne)
-    pyblish.api.register_plugin(CollectorTwo)
+        pyblish.api.register_plugin(CollectorOne)
+        pyblish.api.register_plugin(CollectorTwo)
 
-    runner = CliRunner()
-    result = runner.invoke(pyblish.cli.main,
-                           ["publish", "--targets", "imagesequence"],
-                           env={"PYTHONPATH": pythonpath})
+        runner = CliRunner()
+        result = runner.invoke(pyblish.cli.main,
+                               ["publish", "--targets", "imagesequence"],
+                               env={"PYTHONPATH": pythonpath})
 
-    print(result.output)
-    assert count["#"] == 1, count
+        print(result.output)
+        assert count["#"] == 1, count
 
 
-@with_setup(setup)
-@with_teardown(teardown)
+@with_setup(lib.setup)
+@with_teardown(lib.teardown)
 def test_set_targets_gui():
     """Setting targets with gui"""
 
-    with tempfile.NamedTemporaryFile(dir=_tempdir,
-                                     delete=False,
-                                     suffix=".py") as f:
-        module_name = os.path.basename(f.name)[:-3]
-        f.write(b"""\
+    with lib.tempdir() as tempdir:
+        with tempfile.NamedTemporaryFile(dir=tempdir,
+                                         delete=False,
+                                         suffix=".py") as f:
+            module_name = os.path.basename(f.name)[:-3]
+            f.write(b"""\
 from pyblish import api
 
 def show():
@@ -305,18 +293,18 @@ if __name__ == '__main__':
     show()
 """)
 
-    pythonpath = os.pathsep.join([
-        _tempdir,
-        os.environ.get("PYTHONPATH", "")
-    ])
+        pythonpath = os.pathsep.join([
+            tempdir,
+            os.environ.get("PYTHONPATH", "")
+        ])
 
-    # api.__init__ checks the PYBLISH_TARGETS variable
-    runner = CliRunner()
-    results = runner.invoke(pyblish.cli.main,
-                            ["gui", module_name],
-                            env={"PYTHONPATH": pythonpath,
-                                 "PYBLISH_TARGETS": "imagesequence"})
+        # api.__init__ checks the PYBLISH_TARGETS variable
+        runner = CliRunner()
+        results = runner.invoke(pyblish.cli.main,
+                                ["gui", module_name],
+                                env={"PYTHONPATH": pythonpath,
+                                     "PYBLISH_TARGETS": "imagesequence"})
 
-    result = results.output.splitlines()[-1].rstrip()
-    assert result == "imagesequence"
-    assert results.exit_code == 0
+        result = results.output.splitlines()[-1].rstrip()
+        assert result == "imagesequence"
+        assert results.exit_code == 0
