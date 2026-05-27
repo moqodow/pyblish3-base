@@ -3,6 +3,7 @@
 import os
 
 # Local library
+import pyblish.api
 import pyblish.lib
 import pyblish.plugin
 

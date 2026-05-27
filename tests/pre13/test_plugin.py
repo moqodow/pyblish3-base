@@ -4,6 +4,7 @@ import tempfile
 
 import pyblish.api
 import pyblish.plugin
+import pyblish.util
 from nose2.tools.decorators import (
     with_setup,
     with_teardown

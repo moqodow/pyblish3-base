@@ -6,6 +6,7 @@ import logging
 
 from pyblish.vendor import mock
 import pyblish.api
+import pyblish.lib
 import pyblish.util
 import pyblish.plugin
 from .lib import (

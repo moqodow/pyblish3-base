@@ -1,6 +1,8 @@
 import os
 
 import pyblish
+import pyblish.api
+import pyblish.lib
 import pyblish.plugin
 
 # Setup
