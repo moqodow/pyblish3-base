@@ -34,4 +34,4 @@ install:
   - pip install coverage
 
 build_script:
-  - python nose2 -c nose2.cfg
+  - python -m nose2 -c nose2.cfg
