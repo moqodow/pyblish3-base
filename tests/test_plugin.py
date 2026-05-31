@@ -3,8 +3,8 @@
 
 import os
 import logging
+from unittest import mock
 
-from pyblish.vendor import mock
 import pyblish.api
 import pyblish.util
 import pyblish.plugin

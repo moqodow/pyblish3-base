@@ -1,4 +1,5 @@
 import os
+from unittest import mock
 
 import pyblish
 import pyblish.cli
@@ -13,7 +14,6 @@ from nose2.tools.decorators import (
     with_setup,
     with_teardown
 )
-from pyblish.vendor import mock
 
 
 def ctx():

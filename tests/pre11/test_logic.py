@@ -1,3 +1,4 @@
+from unittest import mock
 
 from . import lib
 
@@ -5,7 +6,6 @@ import pyblish.util
 import pyblish.plugin
 import pyblish.logic
 
-from pyblish.vendor import mock
 from nose2.tools.decorators import (
     with_setup,
     with_teardown
