@@ -21,9 +21,8 @@ environment:
       PYTHON_ARCH: "64"
 
 install:
-  - SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
-  - pip install nose2
-  - pip install coverage
+  - powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/0.11.17/install.ps1 | iex"
+  - set Path=%USERPROFILE%\.local\bin;%Path%
 
 build_script:
-  - python -m nose2 -c nose2.cfg --with-doctest
+  - uv run --python %PYTHON_VERSION% --with nose2 --with coverage nose2 -c nose2.cfg --with-doctest
