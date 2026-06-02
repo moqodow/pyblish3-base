@@ -27,4 +27,7 @@ install:
   - ps: $env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
 
 build_script:
-  - uv run --python %PYTHON_VERSION% --with nose2 --with coverage nose2 -c nose2.cfg --with-doctest
+  - uv run --python %PYTHON_VERSION% --with nose2 --with coverage coverage erase
+  - uv run --python %PYTHON_VERSION% --with nose2 --with coverage coverage run -m nose2 --with-doctest
+  - uv run --python %PYTHON_VERSION% --with nose2 --with coverage coverage report
+  - uv run --python %PYTHON_VERSION% --with nose2 --with coverage coverage html
