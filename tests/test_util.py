@@ -8,6 +8,14 @@ from nose2.tools.decorators import (
     with_teardown
 )
 
+def setup():
+    lib.setup()
+    api.deregister_all_targets()
+
+
+def teardown():
+    api.deregister_all_targets()
+    lib.teardown()
 
 def test_convenience_plugins_argument():
     """util._convenience() `plugins` argument works
@@ -260,6 +268,8 @@ def test_publishing_explicit_targets():
     assert count["#"] == 1, count
 
 
+@with_setup(setup)
+@with_teardown(teardown)
 def test_publishing_explicit_targets_with_global():
     """Publishing with explicit and globally registered targets works"""
 
@@ -290,8 +300,8 @@ def test_publishing_explicit_targets_with_global():
     api.deregister_all_targets()
 
 
-@with_setup(lib.setup)
-@with_teardown(lib.teardown)
+@with_setup(setup)
+@with_teardown(teardown)
 def test_per_session_targets():
     """Register targets per session works"""
 
