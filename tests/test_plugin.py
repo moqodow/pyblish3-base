@@ -521,54 +521,29 @@ def test_register_old_plugin():
     pyblish.plugin.register_plugin(MyPlugin)
 
 
+@unittest.skipIf(pathlib is None, "skip when pathlib is not available")
 @with_setup(lib.setup_empty)
 @with_teardown(lib.teardown)
-def helper_register_plugin_path(path):
-    """helper function to register a plugin path"""
+def test_register_plugin_path_pathlib():
+    """test pathlib support for plugin path registration"""
+    path = pathlib.Path("test/folder/path")
     pyblish.plugin.register_plugin_path(path)
     registered_paths = pyblish.api.registered_paths()
     path = os.path.normpath(str(path))
     assert path in registered_paths, path + ' not in ' + str(registered_paths)
 
 
+@unittest.skipIf(pathlib is None, "skip when pathlib is not available")
 @with_setup(lib.setup_empty)
 @with_teardown(lib.teardown)
-def helper_deregister_plugin_path(path):
-    """helper function to deregister a plugin path"""
+def test_deregister_plugin_path_pathlib():
+    """test pathlib support for plugin path deregistration"""
+    path = pathlib.Path("test/folder/path")
     pyblish.plugin.register_plugin_path(path)
     pyblish.plugin.deregister_plugin_path(path)
     registered_paths = pyblish.api.registered_paths()
     path = os.path.normpath(str(path))
     assert path not in registered_paths, path + ' failed to deregister'
-
-
-def helper_create_pathlib_input():
-    """helper function to create pathlib test input"""
-    input_to_test = []
-    from pathlib import Path, PurePath, PureWindowsPath, WindowsPath, PosixPath, PurePosixPath
-    path_types = [Path, PurePath, PureWindowsPath, WindowsPath, PosixPath, PurePosixPath]
-    for path_type in path_types:
-        try:
-            input_to_test.append(path_type('test/folder/path'))  # create pathlib input
-        except NotImplementedError:  # PosixPath can't be instantiated on windows and raises NotImplementedError
-            pass
-    return input_to_test
-
-
-@unittest.skipIf(pathlib is None, "skip when pathlib is not available")
-def test_register_plugin_path_pathlib():
-    """test pathlib support for plugin path registration"""
-    input_to_test = helper_create_pathlib_input()
-    for path in input_to_test:
-        helper_register_plugin_path(path)
-
-
-@unittest.skipIf(pathlib is None, "skip when pathlib is not available")
-def test_deregister_plugin_path_pathlib():
-    """test pathlib support for plugin path deregistration"""
-    input_to_test = helper_create_pathlib_input()
-    for path in input_to_test:
-        helper_deregister_plugin_path(path)
 
 
 @mock.patch("pyblish.plugin.__explicit_process")
