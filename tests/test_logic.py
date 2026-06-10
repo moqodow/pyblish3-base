@@ -4,7 +4,10 @@ import contextlib
 # Local library
 from . import lib
 
-from pyblish import api, logic, plugin, util
+import pyblish.api
+import pyblish.logic
+import pyblish.plugin
+import pyblish.util
 
 from nose2.tools.decorators import (
     with_setup,
@@ -15,8 +18,8 @@ from nose2.tools.decorators import (
 @contextlib.contextmanager
 def no_guis():
     os.environ.pop("PYBLISHGUI", None)
-    for gui in logic.registered_guis():
-        logic.deregister_gui(gui)
+    for gui in pyblish.logic.registered_guis():
+        pyblish.logic.deregister_gui(gui)
 
     yield
 
@@ -28,8 +31,8 @@ def test_iterator():
 
     count = {"#": 0}
 
-    class MyCollector(api.ContextPlugin):
-        order = api.CollectorOrder
+    class MyCollector(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
 
         def process(self, context):
             inactive = context.create_instance("Inactive")
@@ -40,29 +43,29 @@ def test_iterator():
 
             count["#"] += 1
 
-    class MyValidatorA(api.InstancePlugin):
-        order = api.ValidatorOrder
+    class MyValidatorA(pyblish.api.InstancePlugin):
+        order = pyblish.api.ValidatorOrder
         active = False
 
         def process(self, instance):
             count["#"] += 10
 
-    class MyValidatorB(api.InstancePlugin):
-        order = api.ValidatorOrder
+    class MyValidatorB(pyblish.api.InstancePlugin):
+        order = pyblish.api.ValidatorOrder
 
         def process(self, instance):
             count["#"] += 100
 
-    context = api.Context()
+    context = pyblish.api.Context()
     plugins = [MyCollector, MyValidatorA, MyValidatorB]
 
     assert count["#"] == 0, count
 
-    for Plugin, instance in logic.Iterator(plugins, context):
+    for Plugin, instance in pyblish.logic.Iterator(plugins, context):
         assert instance.name != "Inactive" if instance else True
         assert Plugin.__name__ != "MyValidatorA"
 
-        plugin.process(Plugin, context, instance)
+        pyblish.plugin.process(Plugin, context, instance)
 
     # Collector runs once, one Validator runs once
     assert count["#"] == 101, count
@@ -73,37 +76,37 @@ def test_iterator_with_explicit_targets():
 
     count = {"#": 0}
 
-    class MyCollectorA(api.ContextPlugin):
-        order = api.CollectorOrder
+    class MyCollectorA(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
         targets = ["studio"]
 
         def process(self, context):
             count["#"] += 1
 
-    class MyCollectorB(api.ContextPlugin):
-        order = api.CollectorOrder
+    class MyCollectorB(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
 
         def process(self, context):
             count["#"] += 10
 
-    class MyCollectorC(api.ContextPlugin):
-        order = api.CollectorOrder
+    class MyCollectorC(pyblish.api.ContextPlugin):
+        order = pyblish.api.CollectorOrder
         targets = ["studio"]
 
         def process(self, context):
             count["#"] += 100
 
-    context = api.Context()
+    context = pyblish.api.Context()
     plugins = [MyCollectorA, MyCollectorB, MyCollectorC]
 
     assert count["#"] == 0, count
 
-    for Plugin, instance in logic.Iterator(
+    for Plugin, instance in pyblish.logic.Iterator(
         plugins, context, targets=["studio"]
     ):
         assert Plugin.__name__ != "MyCollectorB"
 
-        plugin.process(Plugin, context, instance)
+        pyblish.plugin.process(Plugin, context, instance)
 
     # Collector runs once, one Validator runs once
     assert count["#"] == 101, count
@@ -114,61 +117,61 @@ def test_register_gui():
 
     with no_guis():
         os.environ["PYBLISHGUI"] = "second,third"
-        logic.register_gui("first")
+        pyblish.logic.register_gui("first")
 
-        print(logic.registered_guis())
-        assert logic.registered_guis() == ["first", "second", "third"]
+        print(pyblish.logic.registered_guis())
+        assert pyblish.logic.registered_guis() == ["first", "second", "third"]
 
     with no_guis():
         os.environ["PYBLISH_GUI"] = "second,third"
-        logic.register_gui("first")
+        pyblish.logic.register_gui("first")
 
-        print(logic.registered_guis())
-        assert logic.registered_guis() == ["first", "second", "third"]
+        print(pyblish.logic.registered_guis())
+        assert pyblish.logic.registered_guis() == ["first", "second", "third"]
 
 
 @with_setup(lib.setup)
 @with_teardown(lib.teardown)
 def test_subset_match():
-    """Plugin.match = api.Subset works as expected"""
+    """Plugin.match = pyblish.api.Subset works as expected"""
 
     count = {"#": 0}
 
-    class MyPlugin(api.InstancePlugin):
+    class MyPlugin(pyblish.api.InstancePlugin):
         families = ["a", "b"]
-        match = api.Subset
+        match = pyblish.api.Subset
 
         def process(self, instance):
             count["#"] += 1
 
-    context = api.Context()
+    context = pyblish.api.Context()
 
     context.create_instance("not_included_1", families=["a"])
     context.create_instance("not_included_1", families=["x"])
     context.create_instance("included_1", families=["a", "b"])
     context.create_instance("included_2", families=["a", "b", "c"])
 
-    util.publish(context, plugins=[MyPlugin])
+    pyblish.util.publish(context, plugins=[MyPlugin])
 
     assert count["#"] == 2
 
-    instances = logic.instances_by_plugin(context, MyPlugin)
+    instances = pyblish.logic.instances_by_plugin(context, MyPlugin)
     assert list(i.name for i in instances) == ["included_1", "included_2"]
 
 
 def test_subset_exact():
-    """Plugin.match = api.Exact works as expected"""
+    """Plugin.match = pyblish.api.Exact works as expected"""
 
     count = {"#": 0}
 
-    class MyPlugin(api.InstancePlugin):
+    class MyPlugin(pyblish.api.InstancePlugin):
         families = ["a", "b"]
-        match = api.Exact
+        match = pyblish.api.Exact
 
         def process(self, instance):
             count["#"] += 1
 
-    context = api.Context()
+    context = pyblish.api.Context()
 
     context.create_instance("not_included_1", families=["a"])
     context.create_instance("not_included_1", families=["x"])
@@ -184,63 +187,63 @@ def test_subset_exact():
     # if instead choosing to use the `families` key.
     instance.data.pop("family")
 
-    util.publish(context, plugins=[MyPlugin])
+    pyblish.util.publish(context, plugins=[MyPlugin])
 
     assert count["#"] == 1
 
-    instances = logic.instances_by_plugin(context, MyPlugin)
+    instances = pyblish.logic.instances_by_plugin(context, MyPlugin)
     assert list(i.name for i in instances) == ["included_1"]
 
 
 def test_plugins_by_families():
     """The right plug-ins are returned from plugins_by_families"""
 
-    class ClassA(api.Collector):
+    class ClassA(pyblish.api.Collector):
         families = ["a"]
 
-    class ClassB(api.Collector):
+    class ClassB(pyblish.api.Collector):
         families = ["b"]
 
-    class ClassC(api.Collector):
+    class ClassC(pyblish.api.Collector):
         families = ["c"]
 
-    class ClassD(api.Collector):
+    class ClassD(pyblish.api.Collector):
         families = ["a", "b"]
-        match = api.Intersection
+        match = pyblish.api.Intersection
 
-    class ClassE(api.Collector):
+    class ClassE(pyblish.api.Collector):
         families = ["a", "b"]
-        match = api.Subset
+        match = pyblish.api.Subset
 
-    class ClassF(api.Collector):
+    class ClassF(pyblish.api.Collector):
         families = ["a", "b"]
-        match = api.Exact
+        match = pyblish.api.Exact
 
-    assert logic.plugins_by_families(
+    assert pyblish.logic.plugins_by_families(
         [ClassA, ClassB, ClassC], ["a", "z"]) == [ClassA]
 
-    assert logic.plugins_by_families(
+    assert pyblish.logic.plugins_by_families(
         [ClassD, ClassE, ClassF], ["a"]) == [ClassD]
 
-    assert logic.plugins_by_families(
+    assert pyblish.logic.plugins_by_families(
         [ClassD, ClassE, ClassF], ["a", "b"]) == [ClassD, ClassE, ClassF]
 
-    assert logic.plugins_by_families(
+    assert pyblish.logic.plugins_by_families(
         [ClassD, ClassE, ClassF], ["a", "b", "c"]) == [ClassD, ClassE]
 
 
 @with_setup(lib.setup)
 @with_teardown(lib.teardown)
 def test_extracted_traceback_contains_correct_backtrace():
-    api.register_plugin_path(os.path.dirname(__file__))
+    pyblish.api.register_plugin_path(os.path.dirname(__file__))
 
-    context = api.Context()
+    context = pyblish.api.Context()
     context.create_instance('test instance')
 
-    plugins = api.discover()
+    plugins = pyblish.api.discover()
     plugins = [p for p in plugins if p.__name__ in
                ('FailingExplicitPlugin', 'FailingImplicitPlugin')]
-    util.publish(context, plugins)
+    pyblish.util.publish(context, plugins)
 
     for result in context.data['results']:
         assert result["error"].traceback[0] == plugins[0].__module__

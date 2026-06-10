@@ -201,10 +201,10 @@ def test_passing_data_to_gui():
                                          suffix=".py") as f:
             module_name = os.path.basename(f.name)[:-3]
             f.write(b"""\
-from pyblish import util
+import pyblish.util
 
 def show():
-    context = util.publish()
+    context = pyblish.util.publish()
     print(context.data["passedFromTest"])
 
 if __name__ == '__main__':
@@ -283,10 +283,10 @@ def test_set_targets_gui():
                                          suffix=".py") as f:
             module_name = os.path.basename(f.name)[:-3]
             f.write(b"""\
-from pyblish import api
+import pyblish.api
 
 def show():
-    targets = api.registered_targets()
+    targets = pyblish.api.registered_targets()
     print(targets[0])
 
 if __name__ == '__main__':

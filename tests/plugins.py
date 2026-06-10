@@ -2,22 +2,22 @@
 
 Source them like this from within a test function:
 
-api.deregister_all_paths()
-api.register_plugin_path(os.path.dirname(__file__))
+pyblish.api.deregister_all_paths()
+pyblish.api.register_plugin_path(os.path.dirname(__file__))
 
 This ensures that the plugins are actually loaded through `plugin.discover`.
 """
-from pyblish import api
+import pyblish.api
 
 
-class FailingExplicitPlugin(api.InstancePlugin):
+class FailingExplicitPlugin(pyblish.api.InstancePlugin):
     """Raise an exception."""
 
     def process(self, instance):
         raise Exception("A test exception")
 
 
-class FailingImplicitPlugin(api.Validator):
+class FailingImplicitPlugin(pyblish.api.Validator):
     """Raise an exception."""
 
     def process(self, instance):
