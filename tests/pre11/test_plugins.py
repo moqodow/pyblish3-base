@@ -4,7 +4,9 @@ import os
 import random
 
 # Local library
+import pyblish.api
 import pyblish.plugin
+import pyblish.logic
 
 from .lib import (
     setup,

@@ -1,6 +1,7 @@
 
 # Local library
 from .. import lib
+import pyblish.api
 import pyblish.plugin
 import pyblish.logic
 from nose2.tools.decorators import (

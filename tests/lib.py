@@ -6,7 +6,9 @@ import contextlib
 from functools import wraps
 
 import pyblish
+import pyblish.api
 import pyblish.cli
+import pyblish.lib
 import pyblish.plugin
 from pyblish.vendor import six
 

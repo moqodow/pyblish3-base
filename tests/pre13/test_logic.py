@@ -2,8 +2,10 @@
 # Local library
 from .. import lib
 
+import pyblish.api
 import pyblish.plugin
 import pyblish.logic
+import pyblish.util
 
 from nose2.tools.decorators import (
     with_setup,
