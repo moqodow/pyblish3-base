@@ -2,6 +2,7 @@ from unittest import mock
 
 from . import lib
 
+import pyblish.api
 import pyblish.util
 import pyblish.plugin
 import pyblish.logic

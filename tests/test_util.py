@@ -12,11 +12,11 @@ from nose2.tools.decorators import (
 
 def setup():
     lib.setup()
-    api.deregister_all_targets()
+    pyblish.api.deregister_all_targets()
 
 
 def teardown():
-    api.deregister_all_targets()
+    pyblish.api.deregister_all_targets()
     lib.teardown()
 
 def test_convenience_plugins_argument():
