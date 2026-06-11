@@ -19,7 +19,7 @@ def test_process_callables():
     """logic.process can take either data or callables"""
     count = {"#": 0}
 
-    class SelectInstance(pyblish.api.Selector):
+    class SelectInstance(pyblish.api.Collector):
         def process(self, context):
             instance = context.create_instance("MyInstance")
             instance.data["family"] =  "myFamily"
@@ -79,7 +79,7 @@ def test_repair():
 
     _data = {}
 
-    class SelectInstance(pyblish.api.Selector):
+    class SelectInstance(pyblish.api.Collector):
         def process(self, context):
             instance = context.create_instance("MyInstance")
             instance.data["family"] =  "MyFamily"
@@ -128,7 +128,7 @@ def test_context_once():
 
     count = {"#": 0}
 
-    class SelectMany(pyblish.api.Selector):
+    class SelectMany(pyblish.api.Collector):
         def process(self, context):
             for name in ("A", "B", "C"):
                 instance = context.create_instance(name)
@@ -151,7 +151,7 @@ def test_incompatible_context():
 
     count = {"#": 0}
 
-    class SelectMany(pyblish.api.Selector):
+    class SelectMany(pyblish.api.Collector):
         def process(self, context):
             for name in ("A", "B", "C"):
                 instance = context.create_instance(name)
@@ -239,7 +239,7 @@ def test_logic_process():
         provider.invoke(plugin.process)
         return result
 
-    class SelectInstance(pyblish.api.Selector):
+    class SelectInstance(pyblish.api.Collector):
 
         def process(self, context):
             context.create_instance("MyInstance")
@@ -257,7 +257,7 @@ def test_active():
 
     count = {"#": 0}
 
-    class SelectInstances4321(pyblish.api.Selector):
+    class SelectInstances4321(pyblish.api.Collector):
         def process(self, context):
             for name in ("A", "B"):
                 instance = context.create_instance(name)
@@ -290,11 +290,11 @@ def test_active():
 @with_setup(lib.setup_empty)
 @with_teardown(lib.teardown)
 def test_failing_selector():
-    """Failing Selector should not abort publishing"""
+    """Failing Collector should not abort publishing"""
 
     count = {"#": 0}
 
-    class MySelector(pyblish.api.Selector):
+    class MyCollector(pyblish.api.Collector):
         def process(self, context):
             assert False, "I shouldn't stop Extraction"
 
@@ -302,7 +302,7 @@ def test_failing_selector():
         def process(self):
             count["#"] += 1
 
-    pyblish.api.register_plugin(MySelector)
+    pyblish.api.register_plugin(MyCollector)
     pyblish.api.register_plugin(MyExtractor)
 
     pyblish.util.publish()
@@ -316,13 +316,13 @@ def test_decrementing_order():
 
     count = {"#": 0}
 
-    class MyDecrementingSelector(pyblish.api.Selector):
-        order = pyblish.api.Selector.order - 0.3
+    class MyDecrementingCollector(pyblish.api.Collector):
+        order = pyblish.api.Collector.order - 0.3
 
         def process(self):
             count["#"] += 0.1
 
-    class MySelector(pyblish.api.Selector):
+    class MyCollector(pyblish.api.Collector):
         def process(self, context):
             count["#"] += 1
             assert False, "I shouldn't stop Extraction"
@@ -356,8 +356,8 @@ def test_decrementing_order():
             assert False, "I will not run"
 
     plugins = [
-        MyDecrementingSelector,
-        MySelector,
+        MyDecrementingCollector,
+        MyCollector,
         MyValidator,
         MyValidator2,
         MyExtractor

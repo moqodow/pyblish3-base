@@ -161,7 +161,7 @@ def test_plugins_sorted():
 def test_inmemory_plugins():
     """In-memory plug-ins works fine"""
 
-    class InMemoryPlugin(pyblish.api.Selector):
+    class InMemoryPlugin(pyblish.api.Collector):
         hosts = ["*"]
         families = ["*"]
 
@@ -185,7 +185,7 @@ def test_inmemory_plugins():
 def test_inmemory_query():
     """Asking for registered plug-ins works well"""
 
-    InMemoryPlugin = type("InMemoryPlugin", (pyblish.api.Selector,), {})
+    InMemoryPlugin = type("InMemoryPlugin", (pyblish.api.Collector,), {})
     pyblish.api.register_plugin(InMemoryPlugin)
     assert pyblish.api.registered_plugins()[0].id == InMemoryPlugin.id
 
@@ -195,7 +195,7 @@ def test_inmemory_query():
 def test_plugin_families_defaults():
     """Plug-ins without specific families default to wildcard"""
 
-    class SelectInstances(pyblish.api.Selector):
+    class SelectInstances(pyblish.api.Collector):
         def process(self, instance):
             pass
 

@@ -125,11 +125,6 @@ from .error import (
     NoInstancesError
 )
 
-from .compat import (
-    Selector,
-    Conformer,
-)
-
 
 def __init__():
     """Initialise Pyblish
@@ -190,10 +185,8 @@ __all__ = [
 
     # SVEC plug-ins
     "Collector",
-    "Selector",
     "Validator",
     "Extractor",
-    "Conformer",
     "Integrator",
 
     "ContextPlugin",

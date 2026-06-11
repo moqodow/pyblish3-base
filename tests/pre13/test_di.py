@@ -17,7 +17,7 @@ def test_di():
     _disk = dict()
 
     # Plugins
-    class SelectInstance(pyblish.api.Selector):
+    class CollectInstance(pyblish.api.Collector):
         def process(self, context):
             self.log.info("Test")
             for name in ("MyInstanceA", "MyInstanceB"):
@@ -37,7 +37,7 @@ def test_di():
             _disk[instance.name] = "%s - %s: %s" % (
                 time(), user, instance.data("value"))
 
-    for plugin in (SelectInstance, ValidateInstance, ExtractInstanceX):
+    for plugin in (CollectInstance, ValidateInstance, ExtractInstanceX):
         pyblish.api.register_plugin(plugin)
 
     context = pyblish.api.Context()
@@ -58,7 +58,7 @@ def test_init():
 
     count = {"#": 0}
 
-    class HappensOnce(pyblish.api.Selector):
+    class HappensOnce(pyblish.api.Collector):
         def __init__(self):
             count["#"] += 1
 
@@ -93,7 +93,7 @@ def test_occurence():
 
     count = {"#": 0}
 
-    class HappensOnce1(pyblish.api.Selector):
+    class HappensOnce1(pyblish.api.Collector):
         def process(self, context):
             count["#"] += 1
             for name in ("Smurfette", "Passive-aggressive smurf"):
@@ -175,11 +175,11 @@ def test_no_instances():
             assert instance is None
             count["#"] += 1
 
-    class Conform(pyblish.api.Conformer):
+    class Integrat(pyblish.api.Integrator):
         def process(self, context):
             count["#"] += 1
 
-    for plugin in (Extract, Extract2, Conform):
+    for plugin in (Extract, Extract2, Integrat):
         pyblish.api.register_plugin(plugin)
 
     context = pyblish.api.Context()
@@ -209,14 +209,14 @@ def test_unavailable_service():
 def test_unavailable_service_logic():
     """Asking for unavailable service ..?"""
 
-    class SelectUnavailable(pyblish.api.Selector):
+    class CollectUnavailable(pyblish.api.Collector):
         def process(self, unavailable):
             print("HHOH")
             self.log.critical("Test")
 
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=[SelectUnavailable],
+            plugins=[CollectUnavailable],
             context=pyblish.api.Context()):
         assert isinstance(result["error"], KeyError)
 
@@ -260,7 +260,7 @@ def test_when_to_trigger_process():
 
     _data = {"error": False}
 
-    class SelectInstance(pyblish.api.Selector):
+    class CollectInstance(pyblish.api.Collector):
         def process(self, context):
             instance = context.create_instance("MyInstance")
             instance.data["family"] =  "compatibleFamily"
@@ -279,7 +279,7 @@ def test_when_to_trigger_process():
         def process(self, instance):
             assert True
 
-    for plugin in (SelectInstance, IncompatibleValidator, CompatibleValiator):
+    for plugin in (CollectInstance, IncompatibleValidator, CompatibleValiator):
         pyblish.api.register_plugin(plugin)
 
     context = pyblish.api.Context()
@@ -312,7 +312,7 @@ def test_asset():
 
     count = {"#": 0}
 
-    class SelectCharacters(pyblish.api.Selector):
+    class CollectCharacters(pyblish.api.Collector):
         """Called once"""
         def process(self, context):
             for name in ("A", "B"):
@@ -328,7 +328,7 @@ def test_asset():
 
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=[SelectCharacters, ValidateColor],
+            plugins=[CollectCharacters, ValidateColor],
             context=pyblish.api.Context()):
         print(result)
 
@@ -342,7 +342,7 @@ def test_di_testing():
 
     instances = list()
 
-    class SelectCharacters(pyblish.api.Validator):
+    class CollectCharacters(pyblish.api.Validator):
         def process(self, context, host):
             for char in host.ls("*_char"):
                 instance = context.create_instance(char, family="character")
@@ -364,7 +364,7 @@ def test_di_testing():
 
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=[SelectCharacters],
+            plugins=[CollectCharacters],
             context=pyblish.api.Context()):
         assert result["error"] is None
 

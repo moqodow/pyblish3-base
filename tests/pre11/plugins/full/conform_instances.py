@@ -3,7 +3,7 @@ import pyblish.api
 
 
 @pyblish.api.log
-class ConformInstances(pyblish.api.Conformer):
+class IntegratInstances(pyblish.api.Integrator):
     hosts = ['python']
     families = ['full']
     version = (0, 1, 0)

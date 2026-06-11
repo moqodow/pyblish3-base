@@ -3,7 +3,7 @@ import pyblish.api
 
 
 @pyblish.api.log
-class SelectInstances(pyblish.api.Selector):
+class CollectInstances(pyblish.api.Collector):
     hosts = ['python']
     version = (0, 1, 0)
 

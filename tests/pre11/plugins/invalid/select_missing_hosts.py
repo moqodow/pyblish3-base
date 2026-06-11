@@ -4,8 +4,8 @@ import pyblish.api
 
 
 @pyblish.api.log
-class SelectMissingHosts(pyblish.api.Selector):
-    """Select instances"""
+class CollectMissingHosts(pyblish.api.Collector):
+    """Collect instances"""
 
     requires = False
     version = "Invalid"

@@ -2,7 +2,7 @@ import pyblish.api
 
 
 @pyblish.api.log
-class SelectInstances(pyblish.api.Selector):
+class CollectInstances(pyblish.api.Collector):
     hosts = ['*']
     version = (0, 0, 1)
 

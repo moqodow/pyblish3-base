@@ -1304,8 +1304,8 @@ def discover(type=None, regex=None, paths=None):
     This function looks for files within paths registered via
     :func:`register_plugin_path` and those added to `PYBLISHPLUGINPATH`.
 
-    It determines *type* - :class:`Selector`, :class:`Validator`,
-    :class:`Extractor` or :class:`Conform` - based on whether it
+    It determines *type* - :class:`Collector`, :class:`Validator`,
+    :class:`Extractor` or :class:`Integrator` - based on whether it
     matches it's corresponding regular expression; e.g.
     "$validator_*^" for plug-ins of type Validator.
 

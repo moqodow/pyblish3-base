@@ -116,7 +116,7 @@ def test_import_mechanism_duplication():
             f.write("""
 import pyblish.api
 
-class MySelector(pyblish.api.Selector):
+class MyCollector(pyblish.api.Collector):
     pass
 """)
 
@@ -124,11 +124,11 @@ class MySelector(pyblish.api.Selector):
             print("File contents after first write:")
             print(f.read())
 
-        # MySelector should be accessible by now
+        # MyCollector should be accessible by now
         plugins = [p.__name__ for p in pyblish.api.discover()]
 
-        assert "MySelector" in plugins, plugins
-        assert "MyOtherSelector" not in plugins, plugins
+        assert "MyCollector" in plugins, plugins
+        assert "MyOtherCollector" not in plugins, plugins
 
         # Remove module, and it's .pyc equivalent
         [os.remove(os.path.join(temp, fname))
@@ -138,7 +138,7 @@ class MySelector(pyblish.api.Selector):
             f.write("""
 import pyblish.api
 
-class MyOtherSelector(pyblish.api.Selector):
+class MyOtherCollector(pyblish.api.Collector):
     pass
 """)
 
@@ -146,11 +146,11 @@ class MyOtherSelector(pyblish.api.Selector):
             print("File contents after second write:")
             print(f.read())
 
-        # MySelector should be gone in favour of MyOtherSelector
+        # MyCollector should be gone in favour of MyOtherCollector
         plugins = [p.__name__ for p in pyblish.api.discover()]
 
-        assert "MyOtherSelector" in plugins, plugins
-        assert "MySelector" not in plugins, plugins
+        assert "MyOtherCollector" in plugins, plugins
+        assert "MyCollector" not in plugins, plugins
 
 
 @raises(TypeError)

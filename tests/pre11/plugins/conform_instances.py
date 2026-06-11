@@ -7,7 +7,7 @@ import pyblish.api
 api = mock.MagicMock()
 
 
-class ConformInstances(pyblish.api.Conformer):
+class IntegratInstances(pyblish.api.Integrator):
     hosts = ['python']
     families = ['test.family']
     version = (0, 1, 0)

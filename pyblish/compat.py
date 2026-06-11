@@ -11,9 +11,6 @@ if six.PY2:
 else:
     get_arg_spec = inspect.getfullargspec
 
-# Aliases
-Selector = plugin.Collector
-Conformer = plugin.Integrator
 
 _filename_ascii_strip_re = re.compile(r'[^-\w.]')
 _windows_device_files = ('CON', 'AUX', 'COM1', 'COM2', 'COM3', 'COM4',
