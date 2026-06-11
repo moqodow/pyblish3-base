@@ -1,5 +1,7 @@
 import os
 import tempfile
+import unittest
+import sys
 
 import pyblish
 import pyblish.cli
@@ -119,6 +121,7 @@ def test_environment_host_registration():
     assert count["#"] == 11, count
 
 
+@unittest.skipIf(not sys.stdin.isatty(), "skip a gui is not available")
 @with_setup(lib.setup)
 @with_teardown(lib.teardown)
 def test_show_gui():
@@ -154,6 +157,7 @@ if __name__ == '__main__':
         assert result.exit_code == 0
 
 
+@unittest.skipIf(not sys.stdin.isatty(), "skip a gui is not available")
 @with_setup(lib.setup)
 @with_teardown(lib.teardown)
 def test_uses_gui_from_env():
@@ -190,6 +194,7 @@ if __name__ == '__main__':
         assert result.exit_code == 0
 
 
+@unittest.skipIf(not sys.stdin.isatty(), "skip a gui is not available")
 @with_setup(lib.setup)
 @with_teardown(lib.teardown)
 def test_passing_data_to_gui():
@@ -272,6 +277,7 @@ def test_set_targets():
         assert count["#"] == 1, count
 
 
+@unittest.skipIf(not sys.stdin.isatty(), "skip a gui is not available")
 @with_setup(lib.setup)
 @with_teardown(lib.teardown)
 def test_set_targets_gui():
