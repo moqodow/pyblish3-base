@@ -20,12 +20,6 @@ _windows_device_files = ('CON', 'AUX', 'COM1', 'COM2', 'COM3', 'COM4',
                          'LPT1', 'LPT2', 'LPT3', 'PRN', 'NUL')
 
 
-def sort(*args, **kwargs):
-    warnings.warn("pyblish.api.sort has been deprecated; "
-                  "use pyblish.api.sort_plugins")
-    return plugin.sort(*args, **kwargs)
-
-
 def deregister_all(*args, **kwargs):
     warnings.warn("pyblish.api.deregister_all has been deprecated; "
                   "use pyblish.api.deregister_all_paths")

@@ -127,7 +127,6 @@ from .error import (
 
 from .compat import (
     deregister_all,
-    sort,
     Selector,
     Conformer,
 )
@@ -276,5 +275,4 @@ __all__ = [
 
     # Compatibility
     "deregister_all",
-    "sort",
 ]
