@@ -1,0 +1,56 @@
+[project]
+name = "pyblish3-base"
+version = "2.0.0"
+license="LGPL-3.0-only"
+license-files = ["LICENSE.txt"]
+description="Plug-in driven automation framework for content"
+readme = "README.txt"
+authors = [
+    {name = "Wilfried Pollan", email = "pyblish3@moqodow.space"},
+    {name = "Abstract Factory and Contributors", email = "marcus@abstractfactory.io"},
+]
+maintainers = [
+    {name = "Wilfried Pollan", email = "pyblish3@moqodow.space"},
+]
+keywords = ["pyblish", "publish", "framework", "film", "vfx", "animation", "games"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities"
+]
+
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+pyblish = "pyblish.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/moqodow/pyblish3"
+Repository = "https://github.com/moqodow/pyblish3"
+
+[dependency-groups]
+dev = [
+    "coverage>=7.14.1",
+    "nose2>=0.16.0",
+]
+docs = [
+    "sphinxcontrib-napoleon>=0.7",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.20,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "pyblish"
+module-root = ""

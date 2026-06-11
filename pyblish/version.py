@@ -1,10 +1,8 @@
+import importlib.metadata
 
-VERSION_MAJOR = 1
-VERSION_MINOR = 8
-VERSION_PATCH = 12
-
-version_info = (VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH)
-version = '%i.%i.%i' % version_info
+version = importlib.metadata.version("pyblish3-base")
+version_major, version_minor, version_patch, *_ = version.split(".")
+version_info = (int(version_major), int(version_minor), int(version_patch))
 __version__ = version
 
 __all__ = ['version', 'version_info', '__version__']
