@@ -30,11 +30,10 @@ jobs:
       - name: Install the project
         run: uv sync --locked --dev
 
-      - name: Erase coverage
-        run: uv run coverage erase
-
       - name: Run tests
-        run: uv run coverage run -m nose2 --with-doctest
+        run: |
+          uv run coverage erase
+          uv run coverage run -m nose2 --with-doctest
 
       - name: Report coverage
         run: uv run coverage report
