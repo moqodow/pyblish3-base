@@ -20,12 +20,6 @@ _windows_device_files = ('CON', 'AUX', 'COM1', 'COM2', 'COM3', 'COM4',
                          'LPT1', 'LPT2', 'LPT3', 'PRN', 'NUL')
 
 
-def deregister_all(*args, **kwargs):
-    warnings.warn("pyblish.api.deregister_all has been deprecated; "
-                  "use pyblish.api.deregister_all_paths")
-    return plugin.deregister_all_paths(*args, **kwargs)
-
-
 @lib.deprecated
 def process(func, plugins, context, test=None):
     r"""Primary processing logic

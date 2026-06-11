@@ -126,7 +126,6 @@ from .error import (
 )
 
 from .compat import (
-    deregister_all,
     Selector,
     Conformer,
 )
@@ -272,7 +271,4 @@ __all__ = [
     "ExtractionError",
     "ConformError",
     "NoInstancesError",
-
-    # Compatibility
-    "deregister_all",
 ]
