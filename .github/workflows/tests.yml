@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python package
+name: Test python package
 
 on:
   push:
@@ -12,23 +12,23 @@ on:
 jobs:
   test:
     name: tests
-    runs-on: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install uv and set the Python version
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      - name: Install uv for python ${{ matrix.python-version }} on ${{ matrix.os }}
+        uses: astral-sh/setup-uv@v8.1.0 # v8.1.0
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
       - name: Install the project
-        run: uv sync --locked --all-extras --dev
+        run: uv sync --locked --dev
 
       - name: Erase coverage
         run: uv run coverage erase
@@ -36,5 +36,5 @@ jobs:
       - name: Run tests
         run: uv run coverage run -m nose2 --with-doctest
 
-      - name: Run tests
+      - name: Report coverage
         run: uv run coverage report
