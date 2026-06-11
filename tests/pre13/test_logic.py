@@ -22,7 +22,7 @@ def test_process_callables():
     class SelectInstance(pyblish.api.Selector):
         def process(self, context):
             instance = context.create_instance("MyInstance")
-            instance.set_data("family", "myFamily")
+            instance.data["family"] =  "myFamily"
             count["#"] += 1
 
     class ValidateInstance(pyblish.api.Validator):
@@ -82,7 +82,7 @@ def test_repair():
     class SelectInstance(pyblish.api.Selector):
         def process(self, context):
             instance = context.create_instance("MyInstance")
-            instance.set_data("family", "MyFamily")
+            instance.data["family"] =  "MyFamily"
 
     class ValidateInstance(pyblish.api.Validator):
         def process(self, instance):
@@ -132,7 +132,7 @@ def test_context_once():
         def process(self, context):
             for name in ("A", "B", "C"):
                 instance = context.create_instance(name)
-                instance.set_data("family", "myFamily")
+                instance.data["family"] =  "myFamily"
 
     class ValidateContext(pyblish.api.Validator):
         families = ["*", "myFamily"]
@@ -155,7 +155,7 @@ def test_incompatible_context():
         def process(self, context):
             for name in ("A", "B", "C"):
                 instance = context.create_instance(name)
-                instance.set_data("family", "myFamily")
+                instance.data["family"] =  "myFamily"
 
     class ValidateContext(pyblish.api.Validator):
         def process(self, context):
@@ -261,7 +261,7 @@ def test_active():
         def process(self, context):
             for name in ("A", "B"):
                 instance = context.create_instance(name)
-                instance.set_data("family", "myFamily")
+                instance.data["family"] =  "myFamily"
 
             count["#"] += 1
 

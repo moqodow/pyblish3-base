@@ -118,8 +118,8 @@ def test_main_safe_processes_fail(_):
 
     # Give plugins something to process
     instance = context.create_instance(name='TestInstance')
-    instance.set_data('family', value=FAMILY)
-    instance.set_data('host', value=HOST)
+    instance.data['family'] =  FAMILY
+    instance.data['host'] =  HOST
 
     pyblish.util.extract(context)
     pyblish.util.conform(context)
@@ -135,13 +135,13 @@ def test_process():
     class SelectInstance(pyblish.api.Selector):
         def process_context(self, context):
             instance = context.create_instance("MyInstance")
-            instance.set_data("family", "MyFamily")
-            instance.set_data("value", "secret")
+            instance.data["family"] =  "MyFamily"
+            instance.data["value"] =  "secret"
 
     class ValidateInstance(pyblish.plugin.Validator):
         def process_instance(self, instance):
             self.log.critical("Setting valid to true")
-            instance.set_data("valid", True)
+            instance.data["valid"] =  True
 
     class ExtractInstance(pyblish.plugin.Extractor):
         def process_instance(self, instance):
@@ -195,12 +195,12 @@ def test_inmemory_svec():
     class SelectInstances(pyblish.api.Selector):
         def process_context(self, context):
             instance = context.create_instance(name="MyInstance")
-            instance.set_data("family", "MyFamily")
+            instance.data["family"] =  "MyFamily"
 
             SomeData = type("SomeData", (object,), {})
             SomeData.value = "MyValue"
 
-            instance.add(SomeData)
+            instance.append(SomeData)
 
     class ValidateInstances(pyblish.plugin.Validator):
         def process_instance(self, instance):
@@ -249,7 +249,7 @@ def test_failing_context_processing():
 
     context = pyblish.plugin.Context()
     instance = context.create_instance(name="MyInstance")
-    instance.set_data("family", "myFamily")
+    instance.data["family"] =  "myFamily"
 
     pyblish.plugin.register_plugin(MyPlugin)
     pyblish.util.publish(context=context)
@@ -296,9 +296,9 @@ def test_extraction_failure():
     # Manually create instance and nodes, bypassing selection
     instance = context.create_instance(name='test_instance')
 
-    instance.add('test_PLY')
-    instance.set_data("publishable", value=True)
-    instance.set_data('family', value=FAMILY)
+    instance.append('test_PLY')
+    instance.data["publishable"] =  True
+    instance.data['family'] =  FAMILY
 
     # Assuming validations pass
     plugins = dict((p.__name__, p) for p in pyblish.plugin.discover())
@@ -323,9 +323,9 @@ def test_selection_appends():
     context = pyblish.plugin.Context()
 
     instance = context.create_instance(name='MyInstance')
-    instance.add('node1')
-    instance.add('node2')
-    instance.set_data("publishable", value=True)
+    instance.append('node1')
+    instance.append('node2')
+    instance.data["publishable"] =  True
 
     assert len(context) == 1
 
@@ -352,7 +352,7 @@ def test_interface():
     class SelectInstance(pyblish.api.Selector):
         def process_context(self, context):
             instance = context.create_instance(name='test_instance')
-            instance.add('test_PLY')
+            instance.append('test_PLY')
 
     class ValidateInstance(pyblish.api.Validator):
         def process_instance(self, instance):
@@ -411,7 +411,7 @@ def test_failing_validator():
 
     context = pyblish.plugin.Context()
     instance = context.create_instance("MyInstance")
-    instance.set_data("family", "test")
+    instance.data["family"] =  "test"
 
     iterator = pyblish.logic.process(
         func=pyblish.plugin.process,
@@ -434,7 +434,7 @@ def test_order():
         def process_context(self, context):
             order["#"] += "1"
             instance = context.create_instance("MyInstance")
-            instance.set_data("family", "myFamily")
+            instance.data["family"] =  "myFamily"
 
     class Validator1(pyblish.plugin.Validator):
         def process_instance(self, instance):
@@ -505,7 +505,7 @@ def test_plugins_by_instance():
     Plugin2.families = ["b"]
 
     instance = pyblish.plugin.Instance("A")
-    instance.set_data("family", "a")
+    instance.data["family"] =  "a"
 
     assert (pyblish.logic.plugins_by_instance(
                   (Plugin1, Plugin2), instance) ==
@@ -525,9 +525,9 @@ def test_instances_by_plugin():
         inst = ctx.create_instance(
             name='TestInstance{0}'.format(families.index(family) + 1))
 
-        inst.set_data("publishable", value=True)
-        inst.set_data('family', value=family)
-        inst.set_data('host', value='python')
+        inst.data["publishable"] =  True
+        inst.data['family'] =  family
+        inst.data['host'] =  'python'
 
     plugins = pyblish.plugin.discover('validators')
     plugins_dict = dict()
@@ -604,7 +604,7 @@ def test_context_once():
         def process_context(self, context):
             for name in ("A", "B", "C"):
                 instance = context.create_instance(name)
-                instance.set_data("family", "myFamily")
+                instance.data["family"] =  "myFamily"
 
     class ValidateContext(pyblish.api.Validator):
         def process_context(self, context):
@@ -631,7 +631,7 @@ def test_instance_every():
         def process_context(self, context):
             for name in ("A", "B", "C"):
                 instance = context.create_instance(name)
-                instance.set_data("family", "myFamily")
+                instance.data["family"] =  "myFamily"
 
     class ValidateContext(pyblish.api.Validator):
         def process_instance(self, instance):

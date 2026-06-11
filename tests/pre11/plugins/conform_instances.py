@@ -23,4 +23,4 @@ class ConformInstances(pyblish.api.Conformer):
             api.login(user='Test', password='testpass613')
             api.notify(message, uri)
 
-            instance.set_data('notified', value=True)
+            instance.data['notified'] =  True

@@ -76,10 +76,10 @@ def test_simple_instance():
 
         def process(self, context):
             instance = context.create_instance(name="A")
-            instance.set_data("family", "familyA")
+            instance.data["family"] =  "familyA"
 
             instance = context.create_instance(name="B")
-            instance.set_data("family", "familyB")
+            instance.data["family"] =  "familyB"
 
             count["#"] += 1
 

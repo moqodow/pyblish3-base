@@ -90,8 +90,8 @@ def test_asset():
     """Using asset over instance works fine"""
     context = pyblish.plugin.Context()
 
-    asseta = context.create_asset("MyAssetA", family="myFamily")
-    assetb = context.create_asset("MyAssetB", family="myFamily")
+    asseta = context.create_instance("MyAssetA", family="myFamily")
+    assetb = context.create_instance("MyAssetB", family="myFamily")
 
     assert asseta in context
     assert assetb in context

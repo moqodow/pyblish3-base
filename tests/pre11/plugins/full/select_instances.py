@@ -9,11 +9,11 @@ class SelectInstances(pyblish.api.Selector):
 
     def process_context(self, context):
         inst = context.create_instance(name='Test')
-        inst.set_data('family', 'full')
-        inst.set_data('selected', True)
+        inst.data['family'] =  'full'
+        inst.data['selected'] =  True
 
         # The following will be set during
         # processing of other plugins
-        inst.set_data('validated', False)
-        inst.set_data('extracted', False)
-        inst.set_data('conformed', False)
+        inst.data['validated'] =  False
+        inst.data['extracted'] =  False
+        inst.data['conformed'] =  False

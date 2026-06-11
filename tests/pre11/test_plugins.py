@@ -38,7 +38,7 @@ def test_name_override():
     inst = pyblish.plugin.Instance(name='my_name')
     assert inst.data('name') == 'my_name'
 
-    inst.set_data('name', value='overridden_name')
+    inst.data['name'] =  value='overridden_name'
     assert inst.data('name') == 'overridden_name'
 
 
@@ -91,11 +91,11 @@ def test_instances_by_plugin_invariant():
     ctx = pyblish.plugin.Context()
     for i in range(10):
         inst = ctx.create_instance(name="Instance%i" % i)
-        inst.set_data("family", "A")
+        inst.data["family"] =  "A"
 
         if i % 2:
             # Every other instance is of another family
-            inst.set_data("family", "B")
+            inst.data["family"] =  "B"
 
     class MyPlugin(pyblish.plugin.Validator):
         hosts = ["python"]
@@ -166,7 +166,7 @@ def test_inmemory_plugins():
         families = ["*"]
 
         def process_context(self, context):
-            context.set_data("workingFine", True)
+            context.data["workingFine"] =  True
 
     pyblish.api.register_plugin(InMemoryPlugin)
 
@@ -200,7 +200,7 @@ def test_plugin_families_defaults():
             pass
 
     instance = pyblish.api.Instance("MyInstance")
-    instance.set_data("family", "SomeFamily")
+    instance.data["family"] =  "SomeFamily"
 
     assert (pyblish.api.instances_by_plugin(
         [instance], SelectInstances)[0] == instance)

@@ -13,7 +13,7 @@ class SelectInstances(pyblish.api.Selector):
         instance = context.create_instance(name='inst1')
 
         for node in ('node1_PLY', 'node2_PLY', 'node3_GRP'):
-            instance.add(node)
+            instance.append(node)
 
         for key, value in {
                 'publishable': True,
@@ -22,4 +22,4 @@ class SelectInstances(pyblish.api.Selector):
                 'endFrame': 1025
                 }.items():
 
-            instance.set_data(key, value)
+            instance.data[key] =  value

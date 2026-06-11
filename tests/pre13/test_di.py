@@ -22,8 +22,8 @@ def test_di():
             self.log.info("Test")
             for name in ("MyInstanceA", "MyInstanceB"):
                 instance = context.create_instance(name)
-                instance.set_data("family", "myFamily")
-                instance.set_data("value", "123")
+                instance.data["family"] =  "myFamily"
+                instance.data["value"] =  "123"
 
             print("Instance: %s" % instance)
 
@@ -65,7 +65,7 @@ def test_init():
         def process(self, context):
             for name in ("Smurfette", "Passive-aggressive smurf"):
                 instance = context.create_instance(name)
-                instance.set_data("family", "smurfFamily")
+                instance.data["family"] =  "smurfFamily"
 
     class HappensTwice(pyblish.api.Validator):
         def __init__(self):
@@ -98,7 +98,7 @@ def test_occurence():
             count["#"] += 1
             for name in ("Smurfette", "Passive-aggressive smurf"):
                 instance = context.create_instance(name)
-                instance.set_data("family", "smurfFamily")
+                instance.data["family"] =  "smurfFamily"
 
     class HappensOnce2(pyblish.api.Validator):
         def process(self):
@@ -263,7 +263,7 @@ def test_when_to_trigger_process():
     class SelectInstance(pyblish.api.Selector):
         def process(self, context):
             instance = context.create_instance("MyInstance")
-            instance.set_data("family", "compatibleFamily")
+            instance.data["family"] =  "compatibleFamily"
 
     class IncompatibleValidator(pyblish.api.Validator):
         families = ["incompatibleFamily"]
@@ -316,7 +316,7 @@ def test_asset():
         """Called once"""
         def process(self, context):
             for name in ("A", "B"):
-                context.create_asset(name, family="myFamily")
+                context.create_instance(name, family="myFamily")
             count["#"] += 1
 
     class ValidateColor(pyblish.api.Validator):
@@ -346,7 +346,7 @@ def test_di_testing():
         def process(self, context, host):
             for char in host.ls("*_char"):
                 instance = context.create_instance(char, family="character")
-                instance.add(host.listRelatives(char))
+                instance.append(host.listRelatives(char))
                 instances.append(instance.name)
 
     class HostMock(object):
