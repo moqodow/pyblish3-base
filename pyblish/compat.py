@@ -33,20 +33,6 @@ def deregister_all(*args, **kwargs):
 
 
 @lib.deprecated
-def format_filename(filename):
-    return filename
-
-
-@lib.deprecated
-def format_filename2(filename):
-    return filename
-
-
-lib.format_filename = format_filename
-lib.format_filename2 = format_filename2
-
-
-@lib.deprecated
 def process(func, plugins, context, test=None):
     r"""Primary processing logic
 

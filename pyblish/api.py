@@ -130,7 +130,6 @@ from .compat import (
     sort,
     Selector,
     Conformer,
-    format_filename,
 )
 
 
@@ -258,7 +257,6 @@ __all__ = [
     "deregister_all_targets",
 
     "sort_plugins",
-    "format_filename",
     "current_host",
     "sort_plugins",
 
