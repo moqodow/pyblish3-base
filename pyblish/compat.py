@@ -3,8 +3,6 @@
 import inspect
 from . import lib, logic
 
-get_arg_spec = inspect.getfullargspec
-
 
 @lib.deprecated
 def process(func, plugins, context, test=None):
@@ -79,7 +77,7 @@ def process(func, plugins, context, test=None):
             if hasattr(__context, "__call__"):
                 context = __context()
 
-            args = get_arg_spec(Plugin.process).args
+            args = inspect.getfullargspec(Plugin.process).args
 
             # Backwards compatibility with `asset`
             if "asset" in args:
