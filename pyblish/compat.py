@@ -1,20 +1,13 @@
 """Compatibility module"""
 
-import re
 import inspect
-import warnings
-from . import plugin, lib, logic
+from . import lib, logic
 from .vendor import six
 
 if six.PY2:
     get_arg_spec = inspect.getargspec
 else:
     get_arg_spec = inspect.getfullargspec
-
-
-_filename_ascii_strip_re = re.compile(r'[^-\w.]')
-_windows_device_files = ('CON', 'AUX', 'COM1', 'COM2', 'COM3', 'COM4',
-                         'LPT1', 'LPT2', 'LPT3', 'PRN', 'NUL')
 
 
 @lib.deprecated
@@ -133,8 +126,5 @@ def process(func, plugins, context, test=None):
             yield logic.TestFailed(test(**vars), vars)
             break
 
-
-process.next_plugin = None
-process.next_instance = None
 
 logic.process = process
