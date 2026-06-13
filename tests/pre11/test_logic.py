@@ -28,7 +28,7 @@ def test_publish_all(_):
     assert "ValidateInstances" in [p.__name__ for p in plugins]
     assert "ExtractInstances" in [p.__name__ for p in plugins]
 
-    context = pyblish.util.publish_all()
+    context = pyblish.util.publish()
     assert len(context) == 1
 
     for instance in context:
@@ -42,7 +42,7 @@ def test_publish_all(_):
 @with_teardown(teardown)
 def test_publish_all_no_context():
     """Not passing a context is fine"""
-    context = pyblish.util.publish_all()
+    context = pyblish.util.publish()
     assert len(context) == 1
 
     for instance in context:
