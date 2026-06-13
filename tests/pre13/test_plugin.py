@@ -10,8 +10,6 @@ from nose2.tools.decorators import (
     with_teardown
 )
 
-from pyblish.vendor import six
-
 from .. import lib
 
 
@@ -65,7 +63,7 @@ class BadFamilies2(pyblish.api.Plugin):
 
 """
 
-    six.exec_(code, module.__dict__)
+    exec(code, module.__dict__)
 
     plugins = pyblish.plugin.plugins_from_module(module)
 
@@ -99,7 +97,7 @@ class MyPlugin(pyblish.api.Plugin):
 
 """
 
-    six.exec_(code, module.__dict__)
+    exec(code, module.__dict__)
     MyPlugin = pyblish.plugin.plugins_from_module(module)[0]
     assert MyPlugin.__name__ == "MyPlugin"
 

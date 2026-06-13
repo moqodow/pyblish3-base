@@ -1,3 +1,4 @@
+import io
 import os
 import sys
 import logging
@@ -7,7 +8,6 @@ import traceback
 import functools
 
 from . import _registered_callbacks
-from .vendor import six
 
 
 def inrange(number, base, offset=0.5):
@@ -272,7 +272,7 @@ def emit(signal, **kwargs):
         try:
             callback(**kwargs)
         except Exception:
-            file = six.StringIO()
+            file = io.StringIO()
             traceback.print_exc(file=file)
             sys.stderr.write(file.getvalue())
             # Why the roundabout through StringIO?

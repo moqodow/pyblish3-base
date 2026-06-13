@@ -2,12 +2,8 @@
 
 import inspect
 from . import lib, logic
-from .vendor import six
 
-if six.PY2:
-    get_arg_spec = inspect.getargspec
-else:
-    get_arg_spec = inspect.getfullargspec
+get_arg_spec = inspect.getfullargspec
 
 
 @lib.deprecated

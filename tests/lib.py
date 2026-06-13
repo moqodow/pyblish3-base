@@ -1,3 +1,4 @@
+import io
 import os
 import sys
 import shutil
@@ -10,7 +11,6 @@ import pyblish.api
 import pyblish.cli
 import pyblish.lib
 import pyblish.plugin
-from pyblish.vendor import six
 
 # Setup
 HOST = 'python'
@@ -57,7 +57,7 @@ def teardown():
 def captured_stdout():
     """Temporarily reassign stdout to a local variable"""
     try:
-        sys.stdout = six.StringIO()
+        sys.stdout = io.StringIO()
         yield sys.stdout
     finally:
         sys.stdout = sys.__stdout__
@@ -67,7 +67,7 @@ def captured_stdout():
 def captured_stderr():
     """Temporarily reassign stderr to a local variable"""
     try:
-        sys.stderr = six.StringIO()
+        sys.stderr = io.StringIO()
         yield sys.stderr
     finally:
         sys.stderr = sys.__stderr__
