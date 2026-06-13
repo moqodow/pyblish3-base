@@ -1513,10 +1513,10 @@ def sort(plugins):
     Their order is determined by their `order` attribute,
     which defaults to their standard execution order:
 
-        1. Selection
+        1. Collection
         2. Validation
         3. Extraction
-        4. Conform
+        4. Integration
 
     *But may be overridden.
 
