@@ -25,7 +25,7 @@ from nose2.tools.decorators import (
 @with_teardown(teardown)
 def test_print_plugin():
     """Printing plugin returns name of class"""
-    plugins = pyblish.plugin.discover('validators')
+    plugins = pyblish.plugin.discover()
     plugin = plugins[0]
     assert plugin.__name__ in repr(plugin())
     assert plugin.__name__ == str(plugin())
@@ -49,7 +49,7 @@ def test_no_duplicate_plugins():
     plugin_paths = pyblish.plugin.plugin_paths()
     assert len(plugin_paths) == 2
 
-    plugins = pyblish.plugin.discover(type='selectors')
+    plugins = pyblish.plugin.discover()
 
     # There are two plugins available, but one of them is
     # hidden under the duplicate module name. As a result,

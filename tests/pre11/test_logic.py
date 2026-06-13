@@ -162,7 +162,7 @@ def test_wildcard_plugins():
     """Wildcard plugins process instances without family"""
     context = pyblish.plugin.Context()
 
-    plugin = pyblish.plugin.discover(type="selectors")[0]
+    plugin = pyblish.plugin.discover()[0]
     iterator = pyblish.logic.process(
         func=pyblish.plugin.process,
         plugins=[plugin],
@@ -331,8 +331,7 @@ def test_selection_appends():
 
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=pyblish.plugin.discover(
-                'selectors', regex='CollectInstances$'),
+            plugins=pyblish.plugin.discover(),
             context=context):
         assert result.get("error") == None
 
@@ -529,7 +528,7 @@ def test_instances_by_plugin():
         inst.data['family'] =  family
         inst.data['host'] =  'python'
 
-    plugins = pyblish.plugin.discover('validators')
+    plugins = pyblish.plugin.discover()
     plugins_dict = dict()
 
     for plugin in plugins:
