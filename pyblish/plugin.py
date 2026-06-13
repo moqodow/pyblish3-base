@@ -35,12 +35,8 @@ from . import (
 )
 
 from . import lib
-from .vendor import iscompatible, six
+from .vendor import iscompatible
 
-if six.PY2:
-    get_arg_spec = inspect.getargspec
-else:
-    get_arg_spec = inspect.getfullargspec
 
 log = logging.getLogger("pyblish.plugin")
 
@@ -92,7 +88,7 @@ class Provider():
 
     @classmethod
     def args(cls, func):
-        return [a for a in get_arg_spec(func)[0]
+        return [a for a in inspect.getfullargspec(func)[0]
                 if a not in ("self", "cls")]
 
     def invoke(self, func):
@@ -152,7 +148,7 @@ def evaluate_enabledness(plugin):
     plugin.__contextEnabled__ = False
     plugin.__instanceEnabled__ = False
 
-    args_ = get_arg_spec(plugin.process).args
+    args_ = inspect.getfullargspec(plugin.process).args
 
     if "instance" in args_:
         plugin.__instanceEnabled__ = True
@@ -207,8 +203,7 @@ class MetaPlugin(type):
 
 
 @lib.log
-@six.add_metaclass(MetaPlugin)
-class Plugin():
+class Plugin(metaclass=MetaPlugin):
     """Base-class for plugins
 
     Attributes:
@@ -319,7 +314,7 @@ IntegratorOrder = 3
 
 def validate_argument_signature(plugin):
     """Ensure plug-in processes either 'instance' or 'context'"""
-    if not any(arg in get_arg_spec(plugin.process).args
+    if not any(arg in inspect.getfullargspec(plugin.process).args
                for arg in ("instance", "context")):
         plugin.__invalidSignature__ = True
 
@@ -332,8 +327,7 @@ class ExplicitMetaPlugin(MetaPlugin):
         return super(ExplicitMetaPlugin, cls).__init__(*args, **kwargs)
 
 
-@six.add_metaclass(ExplicitMetaPlugin)
-class ContextPlugin(Plugin):
+class ContextPlugin(Plugin, metaclass=ExplicitMetaPlugin):
 
     def process(self, context):
         """Primary processing method
@@ -344,8 +338,7 @@ class ContextPlugin(Plugin):
         """
 
 
-@six.add_metaclass(MetaPlugin)
-class InstancePlugin(Plugin):
+class InstancePlugin(Plugin, metaclass=MetaPlugin):
 
     def process(self, instance):
         """Primary processing method
@@ -381,8 +374,7 @@ class MetaAction(type):
 
 
 @lib.log
-@six.add_metaclass(MetaAction)
-class Action():
+class Action(metaclass=MetaAction):
     """User-supplied interactive action
 
     Subclass this class and append to Plugin.actions in order
@@ -705,7 +697,7 @@ class AbstractEntity(list):
     """
 
     def __init__(self, name, parent=None):
-        assert isinstance(name, six.string_types)
+        assert isinstance(name, str)
         assert parent is None or isinstance(parent, AbstractEntity)
 
         # Read-only properties
@@ -1343,7 +1335,7 @@ def discover(paths=None):
                 # imports, such as `import os`.
                 sys.modules[abspath] = module
                 with open(abspath, "rb") as f:
-                    six.exec_(f.read(), module.__dict__)
+                    exec(f.read(), module.__dict__)
 
             except Exception as err:
                 log.error("Skipped: \"%s\" (%s)", mod_name, err)
@@ -1435,7 +1427,7 @@ def plugin_is_valid(plugin):
 
     """
 
-    if not isinstance(plugin.requires, six.string_types):
+    if not isinstance(plugin.requires, str):
         log.debug("Plug-in requires must be of type string: %s", plugin)
         return False
 
@@ -1452,12 +1444,12 @@ def plugin_is_valid(plugin):
         return False
 
     for family in plugin.families:
-        if not isinstance(family, six.string_types):
+        if not isinstance(family, str):
             log.debug("Families must be string")
             return False
 
     for host in plugin.hosts:
-        if not isinstance(host, six.string_types):
+        if not isinstance(host, str):
             log.debug("Hosts must be string")
             return False
 

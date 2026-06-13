@@ -5,8 +5,6 @@ import pyblish
 import pyblish.cli
 import pyblish.api
 
-from pyblish.vendor import six
-
 from . import lib
 
 from pyblish.vendor.click.testing import CliRunner
@@ -48,10 +46,10 @@ def test_all_commands_run():
 def test_paths():
     """Paths are correctly returned from cli"""
     plugin = pyblish.api
-    for flag, func in six.iteritems({
+    for flag, func in {
             "--paths": plugin.plugin_paths,
             "--registered-paths": plugin.registered_paths,
-            "--environment-paths": plugin.environment_paths}):
+            "--environment-paths": plugin.environment_paths}.items():
 
         print("Flag: %s" % flag)
         runner = CliRunner()
