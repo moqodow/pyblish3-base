@@ -617,9 +617,6 @@ def __implicit_process(plugin, context, instance=None, action=None):
 
     context.data["results"].append(result)
 
-    # Backwards compatibility
-    result["asset"] = instance  # Deprecated key
-
     return result
 
 
