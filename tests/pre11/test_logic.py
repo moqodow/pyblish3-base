@@ -58,7 +58,8 @@ def test_publish_all_no_context():
 def test_validate_all(_):
     """validate_all() calls upon two of the convenience functions"""
     context = pyblish.plugin.Context()
-    pyblish.util.validate_all(context=context)
+    pyblish.util.collect(context=context)
+    pyblish.util.validate(context=context)
     assert len(context) == 1
 
     for instance in context:

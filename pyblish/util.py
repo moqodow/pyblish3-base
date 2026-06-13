@@ -290,12 +290,3 @@ def _convenience(context=None, plugins=None, targets=None, order=None):
         pass
 
     return context
-
-
-# Backwards compatibility
-
-def validate_all(context=None, plugins=None):
-    warnings.warn("pyblish.util.validate_all has been "
-                  "deprecated; use collect() followed by validate()")
-    context = collect(context, plugins)
-    return validate(context, plugins)
