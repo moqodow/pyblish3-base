@@ -195,7 +195,7 @@ def test_inmemory_query():
 def test_plugin_families_defaults():
     """Plug-ins without specific families default to wildcard"""
 
-    class SelectInstances(pyblish.api.Collector):
+    class CollectInstances(pyblish.api.Collector):
         def process(self, instance):
             pass
 
@@ -203,7 +203,7 @@ def test_plugin_families_defaults():
     instance.data["family"] =  "SomeFamily"
 
     assert (pyblish.api.instances_by_plugin(
-        [instance], SelectInstances)[0] == instance)
+        [instance], CollectInstances)[0] == instance)
 
     class ValidateInstances(pyblish.api.Validator):
         def process(self, instance):

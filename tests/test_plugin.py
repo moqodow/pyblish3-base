@@ -109,7 +109,7 @@ def test_import_mechanism_duplication():
 
     with lib.tempdir() as temp:
         print("Writing temporarily to: %s" % temp)
-        module = os.path.join(temp, "selector.py")
+        module = os.path.join(temp, "collector.py")
         pyblish.api.register_plugin_path(temp)
 
         with open(module, "w") as f:

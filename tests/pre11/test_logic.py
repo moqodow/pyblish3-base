@@ -32,10 +32,10 @@ def test_publish_all(_):
     assert len(context) == 1
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is True
-        assert instance.data('conformed') is True
+        assert instance.data('integrated') is True
 
 
 @with_setup(setup_full)
@@ -46,10 +46,10 @@ def test_publish_all_no_context():
     assert len(context) == 1
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is True
-        assert instance.data('conformed') is True
+        assert instance.data('integrated') is True
 
 
 @mock.patch('pyblish.util.log')
@@ -63,10 +63,10 @@ def test_validate_all(_):
     assert len(context) == 1
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is False
-        assert instance.data('conformed') is False
+        assert instance.data('integrated') is False
 
 
 @mock.patch('pyblish.util.log')
@@ -79,41 +79,41 @@ def test_convenience(_):
     assert len(context) == 1
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is False
         assert instance.data('extracted') is False
-        assert instance.data('conformed') is False
+        assert instance.data('integrated') is False
 
     pyblish.util.validate(context=context)
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is False
-        assert instance.data('conformed') is False
+        assert instance.data('integrated') is False
 
     pyblish.util.extract(context=context)
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is True
-        assert instance.data('conformed') is False
+        assert instance.data('integrated') is False
 
     pyblish.util.integrate(context=context)
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is True
-        assert instance.data('conformed') is True
+        assert instance.data('integrated') is True, instance.data
 
 
 @mock.patch('pyblish.util.log')
 @with_setup(setup_failing)
 @with_teardown(teardown)
 def test_main_safe_processes_fail(_):
-    """Failing selection, extraction or conform merely logs a message"""
+    """Failing collection, extraction or integration merely logs a message"""
     context = pyblish.plugin.Context()
     pyblish.util.collect(context)
 
@@ -294,7 +294,7 @@ def test_extraction_failure():
     """
     context = pyblish.plugin.Context()
 
-    # Manually create instance and nodes, bypassing selection
+    # Manually create instance and nodes, bypassing collection
     instance = context.create_instance(name='test_instance')
 
     instance.append('test_PLY')
@@ -318,7 +318,7 @@ def test_extraction_failure():
 
 @with_setup(setup)
 @with_teardown(teardown)
-def test_selection_appends():
+def test_collection_appends():
     """Collectors append, rather than replace existing instances"""
 
     context = pyblish.plugin.Context()
@@ -338,7 +338,7 @@ def test_selection_appends():
 
     pyblish.util.publish(context)
 
-    # At least one plugin will append a selector
+    # At least one plugin will append a collector
     assert instance in context
     assert len(context) > 1
 

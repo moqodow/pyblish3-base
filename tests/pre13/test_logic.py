@@ -19,7 +19,7 @@ def test_process_callables():
     """logic.process can take either data or callables"""
     count = {"#": 0}
 
-    class SelectInstance(pyblish.api.Collector):
+    class CollectInstance(pyblish.api.Collector):
         def process(self, context):
             instance = context.create_instance("MyInstance")
             instance.data["family"] =  "myFamily"
@@ -34,7 +34,7 @@ def test_process_callables():
         def process(self, instance):
             count["#"] += 100
 
-    pyblish.api.register_plugin(SelectInstance)
+    pyblish.api.register_plugin(CollectInstance)
     pyblish.api.register_plugin(ValidateInstance)
     pyblish.api.register_plugin(ExtractInstance)
 
@@ -79,7 +79,7 @@ def test_repair():
 
     _data = {}
 
-    class SelectInstance(pyblish.api.Collector):
+    class CollectInstance(pyblish.api.Collector):
         def process(self, context):
             instance = context.create_instance("MyInstance")
             instance.data["family"] =  "MyFamily"
@@ -97,7 +97,7 @@ def test_repair():
     results = list()
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=[SelectInstance, ValidateInstance],
+            plugins=[CollectInstance, ValidateInstance],
             context=context):
 
         if isinstance(result, pyblish.logic.TestFailed):
@@ -128,7 +128,7 @@ def test_context_once():
 
     count = {"#": 0}
 
-    class SelectMany(pyblish.api.Collector):
+    class CollectMany(pyblish.api.Collector):
         def process(self, context):
             for name in ("A", "B", "C"):
                 instance = context.create_instance(name)
@@ -140,7 +140,7 @@ def test_context_once():
         def process(self, context):
             count["#"] += 1
 
-    pyblish.util.publish(plugins=[SelectMany, ValidateContext])
+    pyblish.util.publish(plugins=[CollectMany, ValidateContext])
     assert count["#"] == 1
 
 
@@ -151,7 +151,7 @@ def test_incompatible_context():
 
     count = {"#": 0}
 
-    class SelectMany(pyblish.api.Collector):
+    class CollectMany(pyblish.api.Collector):
         def process(self, context):
             for name in ("A", "B", "C"):
                 instance = context.create_instance(name)
@@ -161,7 +161,7 @@ def test_incompatible_context():
         def process(self, context):
             count["#"] += 1
 
-    pyblish.util.publish(plugins=[SelectMany, ValidateContext])
+    pyblish.util.publish(plugins=[CollectMany, ValidateContext])
     assert count["#"] == 1
 
     count["#"] = 0
@@ -174,7 +174,7 @@ def test_incompatible_context():
         def process(self, context):
             count["#"] += 1
 
-    pyblish.util.publish(plugins=[SelectMany, ValidateContext])
+    pyblish.util.publish(plugins=[CollectMany, ValidateContext])
     assert count["#"] == 1
 
     count["#"] = 0
@@ -187,7 +187,7 @@ def test_incompatible_context():
         def process(self, instance):
             count["#"] += 1
 
-    pyblish.util.publish(plugins=[SelectMany, ValidateContext])
+    pyblish.util.publish(plugins=[CollectMany, ValidateContext])
     assert count["#"] == 0
 
 
@@ -239,12 +239,12 @@ def test_logic_process():
         provider.invoke(plugin.process)
         return result
 
-    class SelectInstance(pyblish.api.Collector):
+    class CollectInstance(pyblish.api.Collector):
 
         def process(self, context):
             context.create_instance("MyInstance")
 
-    context = pyblish.util.publish(plugins=[SelectInstance])
+    context = pyblish.util.publish(plugins=[CollectInstance])
     assert not isinstance(context.data["results"][0]["error"],
                           pyblish.logic.TestFailed)
     assert len(context) == 1
@@ -257,7 +257,7 @@ def test_active():
 
     count = {"#": 0}
 
-    class SelectInstances4321(pyblish.api.Collector):
+    class CollectInstances4321(pyblish.api.Collector):
         def process(self, context):
             for name in ("A", "B"):
                 instance = context.create_instance(name)
@@ -280,7 +280,7 @@ def test_active():
         def process(self, instance):
             count["#"] += 100
 
-    for plugin in (SelectInstances4321, ValidateNotActive, ValidateActive):
+    for plugin in (CollectInstances4321, ValidateNotActive, ValidateActive):
         pyblish.api.register_plugin(plugin)
 
     pyblish.util.publish()
@@ -289,7 +289,7 @@ def test_active():
 
 @with_setup(lib.setup_empty)
 @with_teardown(lib.teardown)
-def test_failing_selector():
+def test_failing_collector():
     """Failing Collector should not abort publishing"""
 
     count = {"#": 0}

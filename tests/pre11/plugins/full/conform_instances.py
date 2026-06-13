@@ -9,4 +9,4 @@ class IntegratInstances(pyblish.api.Integrator):
     version = (0, 1, 0)
 
     def process_instance(self, instance):
-        instance.data['conformed'] =  True
+        instance.data['integrated'] =  True
