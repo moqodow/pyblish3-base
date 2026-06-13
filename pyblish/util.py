@@ -293,9 +293,6 @@ def _convenience(context=None, plugins=None, targets=None, order=None):
 
 
 # Backwards compatibility
-select = collect
-conform = integrate
-run = publish  # Alias
 
 
 def publish_all(context=None, plugins=None):

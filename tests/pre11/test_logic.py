@@ -74,7 +74,7 @@ def test_validate_all(_):
 def test_convenience(_):
     """Convenience function work"""
     context = pyblish.plugin.Context()
-    pyblish.util.select(context=context)
+    pyblish.util.collect(context=context)
     assert len(context) == 1
 
     for instance in context:
@@ -99,7 +99,7 @@ def test_convenience(_):
         assert instance.data('extracted') is True
         assert instance.data('conformed') is False
 
-    pyblish.util.conform(context=context)
+    pyblish.util.integrate(context=context)
 
     for instance in context:
         assert instance.data('selected') is True
@@ -114,7 +114,7 @@ def test_convenience(_):
 def test_main_safe_processes_fail(_):
     """Failing selection, extraction or conform merely logs a message"""
     context = pyblish.plugin.Context()
-    pyblish.util.select(context)
+    pyblish.util.collect(context)
 
     # Give plugins something to process
     instance = context.create_instance(name='TestInstance')
@@ -122,7 +122,7 @@ def test_main_safe_processes_fail(_):
     instance.data['host'] =  HOST
 
     pyblish.util.extract(context)
-    pyblish.util.conform(context)
+    pyblish.util.integrate(context)
 
 
 @with_setup(setup_empty)
