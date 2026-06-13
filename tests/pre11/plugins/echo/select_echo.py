@@ -1,7 +1,7 @@
-import pyblish
+import pyblish.api
 
 
-class SelectEcho(pyblish.Selector):
+class CollectEcho(pyblish.api.Collector):
     hosts = ['*']
     version = (0, 0, 1)
 

@@ -90,8 +90,8 @@ def test_asset():
     """Using asset over instance works fine"""
     context = pyblish.plugin.Context()
 
-    asseta = context.create_asset("MyAssetA", family="myFamily")
-    assetb = context.create_asset("MyAssetB", family="myFamily")
+    asseta = context.create_instance("MyAssetA", family="myFamily")
+    assetb = context.create_instance("MyAssetB", family="myFamily")
 
     assert asseta in context
     assert assetb in context
@@ -109,14 +109,14 @@ def test_import_mechanism_duplication():
 
     with lib.tempdir() as temp:
         print("Writing temporarily to: %s" % temp)
-        module = os.path.join(temp, "selector.py")
+        module = os.path.join(temp, "collector.py")
         pyblish.api.register_plugin_path(temp)
 
         with open(module, "w") as f:
             f.write("""
 import pyblish.api
 
-class MySelector(pyblish.api.Selector):
+class MyCollector(pyblish.api.Collector):
     pass
 """)
 
@@ -124,11 +124,11 @@ class MySelector(pyblish.api.Selector):
             print("File contents after first write:")
             print(f.read())
 
-        # MySelector should be accessible by now
+        # MyCollector should be accessible by now
         plugins = [p.__name__ for p in pyblish.api.discover()]
 
-        assert "MySelector" in plugins, plugins
-        assert "MyOtherSelector" not in plugins, plugins
+        assert "MyCollector" in plugins, plugins
+        assert "MyOtherCollector" not in plugins, plugins
 
         # Remove module, and it's .pyc equivalent
         [os.remove(os.path.join(temp, fname))
@@ -138,7 +138,7 @@ class MySelector(pyblish.api.Selector):
             f.write("""
 import pyblish.api
 
-class MyOtherSelector(pyblish.api.Selector):
+class MyOtherCollector(pyblish.api.Collector):
     pass
 """)
 
@@ -146,11 +146,11 @@ class MyOtherSelector(pyblish.api.Selector):
             print("File contents after second write:")
             print(f.read())
 
-        # MySelector should be gone in favour of MyOtherSelector
+        # MyCollector should be gone in favour of MyOtherCollector
         plugins = [p.__name__ for p in pyblish.api.discover()]
 
-        assert "MyOtherSelector" in plugins, plugins
-        assert "MySelector" not in plugins, plugins
+        assert "MyOtherCollector" in plugins, plugins
+        assert "MyCollector" not in plugins, plugins
 
 
 @raises(TypeError)

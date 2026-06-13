@@ -95,7 +95,7 @@ def test_data():
         "--data", "key", "10", "publish"])
 
     assert context().data["key"] == 10
-    assert not context().has_data("notExist")
+    assert "notExist" not in context().data
 
 
 @mock.patch("pyblish.cli.log")

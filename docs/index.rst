@@ -17,10 +17,10 @@ Central objects used throughout Pyblish.
     Context
     Instance
     Plugin
-    Selector
+    Collector
     Validator
     Extractor
-    Conformer
+    Integrator
 
 Functions
 =========
@@ -37,7 +37,6 @@ Helper utilities.
     environment_paths
     register_plugin_path
     deregister_plugin_path
-    deregister_all
     plugins_by_family
     plugins_by_host
     instances_by_plugin
@@ -61,7 +60,6 @@ Library
     :nosignatures:
 
     log
-    format_filename
 
 .. module:: pyblish.error
 
@@ -74,10 +72,10 @@ Exceptions raised that are specific to Pyblish.
     :nosignatures:
 
     PyblishError
-    SelectionError
+    CollectionError
     ValidationError
     ExtractionError
-    ConformError 
+    IntegrationError 
 
 .. module:: pyblish.plugin
 
@@ -124,34 +122,34 @@ Each plug-in MAY define one or more of the following attributes prior to being u
 
 Some of which are MANDATORY, others which are OPTIONAL. See each corresponding subclass for details.
 
-- :class:`Selector`
+- :class:`Collector`
 - :class:`Validator`
 - :class:`Extractor`
-- :class:`Conformer`
+- :class:`Integrator`
 
 
 .. autoclass:: Plugin
     :members:
     :undoc-members:
 
-Selector
+Collector
 --------
 
-A selector finds instances within a working file.
+A collector finds instances within a working file.
 
 .. note:: The following attributes must be present when implementing this plug-in.
 
-    - :attr:`Selector.hosts`
-    - :attr:`Selector.version`
+    - :attr:`Collector.hosts`
+    - :attr:`Collector.version`
 
-.. autoclass:: Selector
+.. autoclass:: Collector
     :members:
     :undoc-members:
 
 Validator
 ---------
 
-A validator validates selected instances.
+A validator validates collected instances.
 
 .. note:: The following attributes must be present when implementing this plug-in.
 
@@ -166,7 +164,7 @@ A validator validates selected instances.
 Extractor
 ---------
 
-Extractors are responsible for serialising selected data into a format suited for persistence on disk. Keep in mind that although an extractor does place file on disk, it isn't responsible for the final destination of files. See :class:`Conformer` for more information.
+Extractors are responsible for serialising collected data into a format suited for persistence on disk. Keep in mind that although an extractor does place file on disk, it isn't responsible for the final destination of files. See :class:`Integrator` for more information.
 
 .. note:: The following attributes must be present when implementing this plug-in.
 
@@ -178,10 +176,10 @@ Extractors are responsible for serialising selected data into a format suited fo
     :members:
     :undoc-members:
 
-Conformer
+Integrator
 ---------
 
-The conformer, also known as `integrator`, integrates data produced by extraction.
+The integrator integrates data produced by extraction.
 
 Its responsibilities include:
 
@@ -194,9 +192,9 @@ Its responsibilities include:
 
     - :attr:`Plugin.hosts`
     - :attr:`Plugin.version`
-    - :attr:`Conformer.families`
+    - :attr:`Integrator.families`
 
-.. autoclass:: Conformer
+.. autoclass:: Intergrator
     :members:
     :undoc-members:
 
@@ -236,11 +234,6 @@ deregister_plugin_path
 
 .. autofunction:: deregister_plugin_path
 
-deregister_all
---------------
-
-.. autofunction:: deregister_all
-
 plugins_by_family
 -----------------
 
@@ -272,15 +265,6 @@ log
 .. autofunction:: log
 
 
-format_filename
----------------
-
-.. autofunction:: format_filename
-
-
-.. module:: pyblish.error
-
-
 PyblishError
 ------------
 
@@ -288,10 +272,10 @@ PyblishError
     :members:
     :undoc-members:
 
-SelectionError
---------------------
+CollectionError
+---------------
 
-.. autoclass:: SelectionError
+.. autoclass:: CollectionError
     :members:
     :undoc-members:
 
@@ -309,9 +293,9 @@ ExtractionError
     :members:
     :undoc-members:
 
-ConformError
-------------
+IntegrationError
+----------------
 
-.. autoclass:: ConformError
+.. autoclass:: IntegrationError
     :members:
     :undoc-members:

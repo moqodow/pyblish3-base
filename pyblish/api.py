@@ -118,19 +118,11 @@ from .logic import (
 
 from .error import (
     PyblishError,
-    SelectionError,
+    CollectionError,
     ValidationError,
     ExtractionError,
-    ConformError,
+    IntegrationError,
     NoInstancesError
-)
-
-from .compat import (
-    deregister_all,
-    sort,
-    Selector,
-    Conformer,
-    format_filename,
 )
 
 
@@ -193,10 +185,8 @@ __all__ = [
 
     # SVEC plug-ins
     "Collector",
-    "Selector",
     "Validator",
     "Extractor",
-    "Conformer",
     "Integrator",
 
     "ContextPlugin",
@@ -258,7 +248,6 @@ __all__ = [
     "deregister_all_targets",
 
     "sort_plugins",
-    "format_filename",
     "current_host",
     "sort_plugins",
 
@@ -270,13 +259,9 @@ __all__ = [
 
     # Exceptions
     "PyblishError",
-    "SelectionError",
+    "CollectionError",
     "ValidationError",
     "ExtractionError",
-    "ConformError",
+    "IntegrationError",
     "NoInstancesError",
-
-    # Compatibility
-    "deregister_all",
-    "sort",
 ]

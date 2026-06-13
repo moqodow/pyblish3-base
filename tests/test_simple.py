@@ -70,16 +70,16 @@ def test_simple_instance():
 
     count = {"#": 0}
 
-    class SimpleSelector(pyblish.api.Plugin):
+    class SimpleCollector(pyblish.api.Plugin):
         """Runs once"""
         order = 0
 
         def process(self, context):
             instance = context.create_instance(name="A")
-            instance.set_data("family", "familyA")
+            instance.data["family"] =  "familyA"
 
             instance = context.create_instance(name="B")
-            instance.set_data("family", "familyB")
+            instance.data["family"] =  "familyB"
 
             count["#"] += 1
 
@@ -98,7 +98,7 @@ def test_simple_instance():
         def process(self, instance):
             count["#"] += 100
 
-    pyblish.util.publish(plugins=[SimpleSelector,
+    pyblish.util.publish(plugins=[SimpleCollector,
                                   SimpleValidator,
                                   SimpleValidatorForB])
 
@@ -114,7 +114,7 @@ def test_simple_order():
         def process(self):
             order.append(1)
 
-    class SelectSomething1234(pyblish.api.Selector):
+    class CollectSomething1234(pyblish.api.Collector):
         def process(self):
             order.append(2)
 
@@ -129,7 +129,7 @@ def test_simple_order():
     for plugin in (ExtractSomething1234,
                    ValidateSomething1234,
                    SimplePlugin,
-                   SelectSomething1234):
+                   CollectSomething1234):
         pyblish.api.register_plugin(plugin)
 
     plugins = pyblish.api.discover()

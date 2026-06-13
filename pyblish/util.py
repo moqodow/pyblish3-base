@@ -290,22 +290,3 @@ def _convenience(context=None, plugins=None, targets=None, order=None):
         pass
 
     return context
-
-
-# Backwards compatibility
-select = collect
-conform = integrate
-run = publish  # Alias
-
-
-def publish_all(context=None, plugins=None):
-    warnings.warn("pyblish.util.publish_all has been "
-                  "deprecated; use publish()")
-    return publish(context, plugins)
-
-
-def validate_all(context=None, plugins=None):
-    warnings.warn("pyblish.util.validate_all has been "
-                  "deprecated; use collect() followed by validate()")
-    context = collect(context, plugins)
-    return validate(context, plugins)

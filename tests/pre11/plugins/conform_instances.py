@@ -7,7 +7,7 @@ import pyblish.api
 api = mock.MagicMock()
 
 
-class ConformInstances(pyblish.api.Conformer):
+class IntegratInstances(pyblish.api.Integrator):
     hosts = ['python']
     families = ['test.family']
     version = (0, 1, 0)
@@ -23,4 +23,4 @@ class ConformInstances(pyblish.api.Conformer):
             api.login(user='Test', password='testpass613')
             api.notify(message, uri)
 
-            instance.set_data('notified', value=True)
+            instance.data['notified'] =  True

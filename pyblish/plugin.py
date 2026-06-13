@@ -617,9 +617,6 @@ def __implicit_process(plugin, context, instance=None, action=None):
 
     context.data["results"].append(result)
 
-    # Backwards compatibility
-    result["asset"] = instance  # Deprecated key
-
     return result
 
 
@@ -1298,37 +1295,17 @@ def plugin_paths():
     return paths
 
 
-def discover(type=None, regex=None, paths=None):
+def discover(paths=None):
     """Find and return available plug-ins
 
     This function looks for files within paths registered via
     :func:`register_plugin_path` and those added to `PYBLISHPLUGINPATH`.
 
-    It determines *type* - :class:`Selector`, :class:`Validator`,
-    :class:`Extractor` or :class:`Conform` - based on whether it
-    matches it's corresponding regular expression; e.g.
-    "$validator_*^" for plug-ins of type Validator.
-
     Arguments:
-        type (str, optional): !DEPRECATED! Only return plugins of
-            specified type. E.g. validators, extractors. In None is specified,
-            return all plugins. Available options are "selectors", validators",
-            "extractors", "conformers", "collectors" and "integrators".
-        regex (str, optional): Limit results to those matching `regex`.
-            Matching is done on classes, as opposed to
-            filenames, due to a file possibly hosting
-            multiple plugins.
         paths (list, optional): Paths to discover plug-ins from.
             If no paths are provided, all paths are searched.
 
     """
-
-    if type is not None:
-        warnings.warn("type argument has been deprecated and does nothing")
-
-    if regex is not None:
-        warnings.warn("discover(): regex argument "
-                      "has been deprecated and does nothing")
 
     plugins = dict()
     plugin_names = []
@@ -1536,10 +1513,10 @@ def sort(plugins):
     Their order is determined by their `order` attribute,
     which defaults to their standard execution order:
 
-        1. Selection
+        1. Collection
         2. Validation
         3. Extraction
-        4. Conform
+        4. Integration
 
     *But may be overridden.
 

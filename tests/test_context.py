@@ -35,12 +35,12 @@ def test_data():
 
     key = 'test_key'
 
-    ctx.set_data(key=key, value=True)
+    ctx.data[key] =  True
     assert ctx.data(key=key) is True
-    assert ctx.has_data(key=key) is True
-    ctx.remove_data(key=key)
+    assert key in ctx.data
+    ctx.data.pop(key)
     assert ctx.data(key=key) is None
-    assert ctx.has_data(key=key) is False
+    assert key not in ctx.data
 
 
 @with_setup(lib.setup)
@@ -49,7 +49,7 @@ def test_add_remove_instances():
     """Adding instances to context works"""
     ctx = pyblish.plugin.Context()
     inst = pyblish.plugin.Instance(name='Test', parent=ctx)
-    ctx.remove(inst)
+    ctx.pop(ctx.index(inst))
 
 
 @with_setup(lib.setup)
@@ -91,8 +91,8 @@ def test_add_to_context():
     """Adding to Context is deprecated, but still works"""
     context = pyblish.api.Context()
     instance = pyblish.api.Instance("MyInstance")
-    context.add(instance)
-    context.remove(instance)
+    context.append(instance)
+    context.pop(context.index(instance))
 
 
 @raises(KeyError)

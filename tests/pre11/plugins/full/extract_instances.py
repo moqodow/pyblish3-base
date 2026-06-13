@@ -9,4 +9,4 @@ class ExtractInstances(pyblish.api.Extractor):
     version = (0, 1, 0)
 
     def process_instance(self, instance):
-        instance.set_data('extracted', True)
+        instance.data['extracted'] =  True

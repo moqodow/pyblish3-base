@@ -25,7 +25,7 @@ from nose2.tools.decorators import (
 @with_teardown(teardown)
 def test_print_plugin():
     """Printing plugin returns name of class"""
-    plugins = pyblish.plugin.discover('validators')
+    plugins = pyblish.plugin.discover()
     plugin = plugins[0]
     assert plugin.__name__ in repr(plugin())
     assert plugin.__name__ == str(plugin())
@@ -38,7 +38,7 @@ def test_name_override():
     inst = pyblish.plugin.Instance(name='my_name')
     assert inst.data('name') == 'my_name'
 
-    inst.set_data('name', value='overridden_name')
+    inst.data['name'] =  value='overridden_name'
     assert inst.data('name') == 'overridden_name'
 
 
@@ -49,7 +49,7 @@ def test_no_duplicate_plugins():
     plugin_paths = pyblish.plugin.plugin_paths()
     assert len(plugin_paths) == 2
 
-    plugins = pyblish.plugin.discover(type='selectors')
+    plugins = pyblish.plugin.discover()
 
     # There are two plugins available, but one of them is
     # hidden under the duplicate module name. As a result,
@@ -91,11 +91,11 @@ def test_instances_by_plugin_invariant():
     ctx = pyblish.plugin.Context()
     for i in range(10):
         inst = ctx.create_instance(name="Instance%i" % i)
-        inst.set_data("family", "A")
+        inst.data["family"] =  "A"
 
         if i % 2:
             # Every other instance is of another family
-            inst.set_data("family", "B")
+            inst.data["family"] =  "B"
 
     class MyPlugin(pyblish.plugin.Validator):
         hosts = ["python"]
@@ -161,12 +161,12 @@ def test_plugins_sorted():
 def test_inmemory_plugins():
     """In-memory plug-ins works fine"""
 
-    class InMemoryPlugin(pyblish.api.Selector):
+    class InMemoryPlugin(pyblish.api.Collector):
         hosts = ["*"]
         families = ["*"]
 
         def process_context(self, context):
-            context.set_data("workingFine", True)
+            context.data["workingFine"] =  True
 
     pyblish.api.register_plugin(InMemoryPlugin)
 
@@ -185,7 +185,7 @@ def test_inmemory_plugins():
 def test_inmemory_query():
     """Asking for registered plug-ins works well"""
 
-    InMemoryPlugin = type("InMemoryPlugin", (pyblish.api.Selector,), {})
+    InMemoryPlugin = type("InMemoryPlugin", (pyblish.api.Collector,), {})
     pyblish.api.register_plugin(InMemoryPlugin)
     assert pyblish.api.registered_plugins()[0].id == InMemoryPlugin.id
 
@@ -195,15 +195,15 @@ def test_inmemory_query():
 def test_plugin_families_defaults():
     """Plug-ins without specific families default to wildcard"""
 
-    class SelectInstances(pyblish.api.Selector):
+    class CollectInstances(pyblish.api.Collector):
         def process(self, instance):
             pass
 
     instance = pyblish.api.Instance("MyInstance")
-    instance.set_data("family", "SomeFamily")
+    instance.data["family"] =  "SomeFamily"
 
     assert (pyblish.api.instances_by_plugin(
-        [instance], SelectInstances)[0] == instance)
+        [instance], CollectInstances)[0] == instance)
 
     class ValidateInstances(pyblish.api.Validator):
         def process(self, instance):

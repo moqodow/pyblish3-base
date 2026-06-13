@@ -5,7 +5,7 @@ import pyblish.api
 
 @pyblish.api.log
 class ValidateMissingFamilies(pyblish.api.Validator):
-    """Select instances"""
+    """Collect instances"""
 
     hosts = ['python']
     version = list()

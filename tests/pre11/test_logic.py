@@ -23,33 +23,33 @@ def test_publish_all(_):
     """publish() calls upon each convenience function"""
     plugins = pyblish.plugin.discover()
 
-    assert "ConformInstances" in [p.__name__ for p in plugins]
-    assert "SelectInstances" in [p.__name__ for p in plugins]
+    assert "IntegratInstances" in [p.__name__ for p in plugins]
+    assert "CollectInstances" in [p.__name__ for p in plugins]
     assert "ValidateInstances" in [p.__name__ for p in plugins]
     assert "ExtractInstances" in [p.__name__ for p in plugins]
 
-    context = pyblish.util.publish_all()
+    context = pyblish.util.publish()
     assert len(context) == 1
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is True
-        assert instance.data('conformed') is True
+        assert instance.data('integrated') is True
 
 
 @with_setup(setup_full)
 @with_teardown(teardown)
 def test_publish_all_no_context():
     """Not passing a context is fine"""
-    context = pyblish.util.publish_all()
+    context = pyblish.util.publish()
     assert len(context) == 1
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is True
-        assert instance.data('conformed') is True
+        assert instance.data('integrated') is True
 
 
 @mock.patch('pyblish.util.log')
@@ -58,14 +58,15 @@ def test_publish_all_no_context():
 def test_validate_all(_):
     """validate_all() calls upon two of the convenience functions"""
     context = pyblish.plugin.Context()
-    pyblish.util.validate_all(context=context)
+    pyblish.util.collect(context=context)
+    pyblish.util.validate(context=context)
     assert len(context) == 1
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is False
-        assert instance.data('conformed') is False
+        assert instance.data('integrated') is False
 
 
 @mock.patch('pyblish.util.log')
@@ -74,55 +75,55 @@ def test_validate_all(_):
 def test_convenience(_):
     """Convenience function work"""
     context = pyblish.plugin.Context()
-    pyblish.util.select(context=context)
+    pyblish.util.collect(context=context)
     assert len(context) == 1
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is False
         assert instance.data('extracted') is False
-        assert instance.data('conformed') is False
+        assert instance.data('integrated') is False
 
     pyblish.util.validate(context=context)
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is False
-        assert instance.data('conformed') is False
+        assert instance.data('integrated') is False
 
     pyblish.util.extract(context=context)
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is True
-        assert instance.data('conformed') is False
+        assert instance.data('integrated') is False
 
-    pyblish.util.conform(context=context)
+    pyblish.util.integrate(context=context)
 
     for instance in context:
-        assert instance.data('selected') is True
+        assert instance.data('collected') is True
         assert instance.data('validated') is True
         assert instance.data('extracted') is True
-        assert instance.data('conformed') is True
+        assert instance.data('integrated') is True, instance.data
 
 
 @mock.patch('pyblish.util.log')
 @with_setup(setup_failing)
 @with_teardown(teardown)
 def test_main_safe_processes_fail(_):
-    """Failing selection, extraction or conform merely logs a message"""
+    """Failing collection, extraction or integration merely logs a message"""
     context = pyblish.plugin.Context()
-    pyblish.util.select(context)
+    pyblish.util.collect(context)
 
     # Give plugins something to process
     instance = context.create_instance(name='TestInstance')
-    instance.set_data('family', value=FAMILY)
-    instance.set_data('host', value=HOST)
+    instance.data['family'] =  FAMILY
+    instance.data['host'] =  HOST
 
     pyblish.util.extract(context)
-    pyblish.util.conform(context)
+    pyblish.util.integrate(context)
 
 
 @with_setup(setup_empty)
@@ -132,23 +133,23 @@ def test_process():
 
     _disk = list()
 
-    class SelectInstance(pyblish.api.Selector):
+    class CollectInstance(pyblish.api.Collector):
         def process_context(self, context):
             instance = context.create_instance("MyInstance")
-            instance.set_data("family", "MyFamily")
-            instance.set_data("value", "secret")
+            instance.data["family"] =  "MyFamily"
+            instance.data["value"] =  "secret"
 
     class ValidateInstance(pyblish.plugin.Validator):
         def process_instance(self, instance):
             self.log.critical("Setting valid to true")
-            instance.set_data("valid", True)
+            instance.data["valid"] =  True
 
     class ExtractInstance(pyblish.plugin.Extractor):
         def process_instance(self, instance):
             assert instance.data("valid") is True
             _disk.append(instance.data("value"))
 
-    for plugin in (SelectInstance, ValidateInstance, ExtractInstance):
+    for plugin in (CollectInstance, ValidateInstance, ExtractInstance):
         pyblish.plugin.register_plugin(plugin)
 
     pyblish.util.publish()
@@ -162,7 +163,7 @@ def test_wildcard_plugins():
     """Wildcard plugins process instances without family"""
     context = pyblish.plugin.Context()
 
-    plugin = pyblish.plugin.discover(type="selectors")[0]
+    plugin = pyblish.plugin.discover()[0]
     iterator = pyblish.logic.process(
         func=pyblish.plugin.process,
         plugins=[plugin],
@@ -192,15 +193,15 @@ def test_inmemory_svec():
     _disk = list()
     _server = dict()
 
-    class SelectInstances(pyblish.api.Selector):
+    class CollectInstances(pyblish.api.Collector):
         def process_context(self, context):
             instance = context.create_instance(name="MyInstance")
-            instance.set_data("family", "MyFamily")
+            instance.data["family"] =  "MyFamily"
 
             SomeData = type("SomeData", (object,), {})
             SomeData.value = "MyValue"
 
-            instance.add(SomeData)
+            instance.append(SomeData)
 
     class ValidateInstances(pyblish.plugin.Validator):
         def process_instance(self, instance):
@@ -219,7 +220,7 @@ def test_inmemory_svec():
                 asset.metadata = "123"
                 _server["assets"].append(asset)
 
-    for plugin in (SelectInstances,
+    for plugin in (CollectInstances,
                    ValidateInstances,
                    ExtractInstances,
                    IntegrateInstances):
@@ -249,7 +250,7 @@ def test_failing_context_processing():
 
     context = pyblish.plugin.Context()
     instance = context.create_instance(name="MyInstance")
-    instance.set_data("family", "myFamily")
+    instance.data["family"] =  "myFamily"
 
     pyblish.plugin.register_plugin(MyPlugin)
     pyblish.util.publish(context=context)
@@ -265,7 +266,7 @@ def test_process_context_error():
     context = pyblish.plugin.Context()
     
     @pyblish.api.log
-    class SelectInstancesError(pyblish.api.Selector):
+    class CollectInstancesError(pyblish.api.Collector):
         hosts = ['python']
         version = (0, 1, 0)
     
@@ -274,11 +275,11 @@ def test_process_context_error():
 
     iterator = pyblish.logic.process(
         func=pyblish.plugin.process,
-        plugins=[SelectInstancesError],
+        plugins=[CollectInstancesError],
         context=context)
 
     result = next(iterator)
-    assert result["plugin"] == SelectInstancesError
+    assert result["plugin"] == CollectInstancesError
     assert isinstance(result["error"], Exception)
 
 
@@ -293,12 +294,12 @@ def test_extraction_failure():
     """
     context = pyblish.plugin.Context()
 
-    # Manually create instance and nodes, bypassing selection
+    # Manually create instance and nodes, bypassing collection
     instance = context.create_instance(name='test_instance')
 
-    instance.add('test_PLY')
-    instance.set_data("publishable", value=True)
-    instance.set_data('family', value=FAMILY)
+    instance.append('test_PLY')
+    instance.data["publishable"] =  True
+    instance.data['family'] =  FAMILY
 
     # Assuming validations pass
     plugins = dict((p.__name__, p) for p in pyblish.plugin.discover())
@@ -317,28 +318,27 @@ def test_extraction_failure():
 
 @with_setup(setup)
 @with_teardown(teardown)
-def test_selection_appends():
-    """Selectors append, rather than replace existing instances"""
+def test_collection_appends():
+    """Collectors append, rather than replace existing instances"""
 
     context = pyblish.plugin.Context()
 
     instance = context.create_instance(name='MyInstance')
-    instance.add('node1')
-    instance.add('node2')
-    instance.set_data("publishable", value=True)
+    instance.append('node1')
+    instance.append('node2')
+    instance.data["publishable"] =  True
 
     assert len(context) == 1
 
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=pyblish.plugin.discover(
-                'selectors', regex='SelectInstances$'),
+            plugins=pyblish.plugin.discover(),
             context=context):
         assert result.get("error") == None
 
     pyblish.util.publish(context)
 
-    # At least one plugin will append a selector
+    # At least one plugin will append a collector
     assert instance in context
     assert len(context) > 1
 
@@ -349,10 +349,10 @@ def test_interface():
     """The interface of plugins works fine"""
     context = pyblish.plugin.Context()
 
-    class SelectInstance(pyblish.api.Selector):
+    class CollectInstance(pyblish.api.Collector):
         def process_context(self, context):
             instance = context.create_instance(name='test_instance')
-            instance.add('test_PLY')
+            instance.append('test_PLY')
 
     class ValidateInstance(pyblish.api.Validator):
         def process_instance(self, instance):
@@ -360,7 +360,7 @@ def test_interface():
 
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=[SelectInstance, ValidateInstance],
+            plugins=[CollectInstance, ValidateInstance],
             context=context):
 
         if isinstance(result, pyblish.logic.TestFailed):
@@ -375,7 +375,7 @@ def test_interface():
 def test_failing_context():
     """Context processing yields identical information to instances"""
 
-    class SelectFailure(pyblish.api.Selector):
+    class CollectFailure(pyblish.api.Collector):
         def process_context(self, context):
             assert False, "I was programmed to fail"
 
@@ -383,7 +383,7 @@ def test_failing_context():
 
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=[SelectFailure],
+            plugins=[CollectFailure],
             context=context):
         error = result.get("error")
         assert error is not None
@@ -411,7 +411,7 @@ def test_failing_validator():
 
     context = pyblish.plugin.Context()
     instance = context.create_instance("MyInstance")
-    instance.set_data("family", "test")
+    instance.data["family"] =  "test"
 
     iterator = pyblish.logic.process(
         func=pyblish.plugin.process,
@@ -430,11 +430,11 @@ def test_order():
 
     order = {"#": "0"}
 
-    class SelectInstance(pyblish.api.Selector):
+    class CollectInstance(pyblish.api.Collector):
         def process_context(self, context):
             order["#"] += "1"
             instance = context.create_instance("MyInstance")
-            instance.set_data("family", "myFamily")
+            instance.data["family"] =  "myFamily"
 
     class Validator1(pyblish.plugin.Validator):
         def process_instance(self, instance):
@@ -463,7 +463,7 @@ def test_order():
             order["#"] += "6"
 
     for plugin in (Extractor2, Extractor1, Validator3,
-                   Validator2, Validator1, SelectInstance):
+                   Validator2, Validator1, CollectInstance):
         pyblish.plugin.register_plugin(plugin)
 
     pyblish.util.publish()
@@ -505,7 +505,7 @@ def test_plugins_by_instance():
     Plugin2.families = ["b"]
 
     instance = pyblish.plugin.Instance("A")
-    instance.set_data("family", "a")
+    instance.data["family"] =  "a"
 
     assert (pyblish.logic.plugins_by_instance(
                   (Plugin1, Plugin2), instance) ==
@@ -525,11 +525,11 @@ def test_instances_by_plugin():
         inst = ctx.create_instance(
             name='TestInstance{0}'.format(families.index(family) + 1))
 
-        inst.set_data("publishable", value=True)
-        inst.set_data('family', value=family)
-        inst.set_data('host', value='python')
+        inst.data["publishable"] =  True
+        inst.data['family'] =  family
+        inst.data['host'] =  'python'
 
-    plugins = pyblish.plugin.discover('validators')
+    plugins = pyblish.plugin.discover()
     plugins_dict = dict()
 
     for plugin in plugins:
@@ -552,7 +552,7 @@ def test_repair():
 
     _data = {}
 
-    class SelectInstance(pyblish.api.Selector):
+    class CollectInstance(pyblish.api.Collector):
         def process_context(self, context):
             context.create_instance("MyInstance")
 
@@ -569,7 +569,7 @@ def test_repair():
     results = list()
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=[SelectInstance, ValidateInstance],
+            plugins=[CollectInstance, ValidateInstance],
             context=context):
 
         if isinstance(result, pyblish.logic.TestFailed):
@@ -600,11 +600,11 @@ def test_context_once():
 
     count = {"#": 0}
 
-    class SelectMany(pyblish.api.Selector):
+    class CollectMany(pyblish.api.Collector):
         def process_context(self, context):
             for name in ("A", "B", "C"):
                 instance = context.create_instance(name)
-                instance.set_data("family", "myFamily")
+                instance.data["family"] =  "myFamily"
 
     class ValidateContext(pyblish.api.Validator):
         def process_context(self, context):
@@ -613,7 +613,7 @@ def test_context_once():
     context = pyblish.api.Context()
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=[SelectMany, ValidateContext],
+            plugins=[CollectMany, ValidateContext],
             context=context):
         pass
 
@@ -627,11 +627,11 @@ def test_instance_every():
 
     count = {"#": 0}
 
-    class SelectMany(pyblish.api.Selector):
+    class CollectMany(pyblish.api.Collector):
         def process_context(self, context):
             for name in ("A", "B", "C"):
                 instance = context.create_instance(name)
-                instance.set_data("family", "myFamily")
+                instance.data["family"] =  "myFamily"
 
     class ValidateContext(pyblish.api.Validator):
         def process_instance(self, instance):
@@ -640,7 +640,7 @@ def test_instance_every():
     context = pyblish.api.Context()
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=[SelectMany, ValidateContext],
+            plugins=[CollectMany, ValidateContext],
             context=context):
         pass
 
