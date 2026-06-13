@@ -118,10 +118,10 @@ from .logic import (
 
 from .error import (
     PyblishError,
-    SelectionError,
+    CollectionError,
     ValidationError,
     ExtractionError,
-    ConformError,
+    IntegrationError,
     NoInstancesError
 )
 
@@ -259,9 +259,9 @@ __all__ = [
 
     # Exceptions
     "PyblishError",
-    "SelectionError",
+    "CollectionError",
     "ValidationError",
     "ExtractionError",
-    "ConformError",
+    "IntegrationError",
     "NoInstancesError",
 ]
