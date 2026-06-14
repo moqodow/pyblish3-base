@@ -416,6 +416,8 @@ def test_category_separator():
                       pyblish.plugin.Action)
 
 
+@with_setup(lib.setup_example_plugin)
+@with_teardown(lib.teardown)
 def test_superclass_process_is_empty():
     """Superclass process() is empty"""
     def e():
@@ -425,6 +427,8 @@ def test_superclass_process_is_empty():
     assert pyblish.api.Plugin.repair.__code__.co_code == e.__code__.co_code
 
 
+@with_setup(lib.setup_example_plugin)
+@with_teardown(lib.teardown)
 def test_plugin_source_path():
     """Plugins discovered carry a source path"""
 

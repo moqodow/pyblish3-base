@@ -96,7 +96,6 @@ from .lib import (
     log,
     time as __time,
     emit,
-    main_package_path as __main_package_path
 )
 
 from .logic import (
@@ -156,9 +155,6 @@ def __init__():
             continue
 
         register_target(target)
-
-    # Register default path
-    register_plugin_path(os.path.join(__main_package_path(), "plugins"))
 
     # Register default test
     register_test(__default_test)

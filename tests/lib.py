@@ -20,11 +20,18 @@ REGISTERED = pyblish.plugin.registered_paths()
 PACKAGEPATH = pyblish.lib.main_package_path()
 ENVIRONMENT = os.environ.get("PYBLISHPLUGINPATH", "")
 PLUGINPATH = os.path.join(PACKAGEPATH, '..', 'tests', 'plugins')
+EXAMPLEPLUGINPATH = os.path.join(PACKAGEPATH, '..', 'examples', 'plugins')
 
 
 def setup():
     """Disable default plugins and only use test plugins"""
     pyblish.plugin.deregister_all_paths()
+
+
+def setup_example_plugin():
+    """Disable default plugins and only use example plugins"""
+    pyblish.plugin.deregister_all_paths()
+    pyblish.plugin.register_plugin_path(EXAMPLEPLUGINPATH)
 
 
 def setup_empty():
