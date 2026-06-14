@@ -10,7 +10,7 @@ from nose2.tools.decorators import (
     with_setup,
     with_teardown
 )
-from pyblish.vendor.click.testing import CliRunner
+from click.testing import CliRunner
 from . import lib
 
 

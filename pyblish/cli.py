@@ -27,7 +27,7 @@ import subprocess
 import contextlib
 
 from . import api, lib, util, __version__
-from .vendor import click
+import click
 
 _ctx = None
 _help = {
