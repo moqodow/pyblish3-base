@@ -5,7 +5,7 @@ import sys
 import logging
 import traceback
 
-from . import _registered_test, _registered_gui, lib
+from . import _registered_test, lib
 from .plugin import (
     Validator,
 
@@ -102,53 +102,6 @@ def registered_test():
 def deregister_test():
     """Restore default test"""
     register_test(default_test)
-
-
-def register_gui(package):
-    """Register a default GUI for Pyblish
-
-    The argument `package` must refer to an available Python
-    package with access to a `.show` member function taking no
-    arguments. E.g.
-
-    def show():
-        pass
-
-    This function is called whenever the default GUI
-    is activated.
-
-    Multiple GUIs:
-        You may register more than one GUI, in which case each
-        is tried in turn until a functioning match is found.
-
-        For example, if both Pyblish QML and Pyblish Lite are
-        registered, but Pyblish QML is not installed, then
-        Pyblish Lite would appear as a "fallback".
-
-    Arguments:
-        package (str): Name of Python package with .show function.
-
-    """
-
-    if package not in _registered_gui:
-        _registered_gui.append(package)
-
-
-def registered_guis():
-    """Return registered GUIs"""
-    from_environment = os.environ.get(
-        "PYBLISH_GUI", os.environ.get("PYBLISHGUI", "")
-    )
-    from_environment = list(gui for gui in from_environment.split(",") if gui)
-
-    return _registered_gui[:] + from_environment
-
-
-def deregister_gui(package):
-    try:
-        _registered_gui.remove(package)
-    except ValueError:
-        raise ValueError("\"%s\" has not been registered." % package)
 
 
 def plugins_by_families(plugins, families):
