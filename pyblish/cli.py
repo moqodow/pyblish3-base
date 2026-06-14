@@ -17,13 +17,11 @@ Note:
 """
 
 import os
-import sys
 import time
 import json
 import shutil
 import logging
 import tempfile
-import subprocess
 import contextlib
 
 from . import api, lib, util, __version__
@@ -347,43 +345,6 @@ def publish(ctx,
         click.echo()
         click.echo("-" * 80)
         click.echo(_format_time(_start, _end))
-
-
-@click.command()
-@click.argument("package", default="pyblish_qml")
-@click.pass_context
-def gui(ctx, package):
-
-    environ = os.environ.copy()
-    context = ctx.obj["context"]
-
-    registered_guis = api.registered_guis()
-
-    if len(registered_guis) > 0:
-        package = registered_guis[0]
-
-    with _cli_plugin(data=context.data) as plugin_path:
-        environ["PYBLISHPLUGINPATH"] = os.pathsep.join(
-            ctx.obj["plugin_paths"] + [plugin_path]
-        )
-
-        process = subprocess.Popen(
-            [sys.executable, "-m", package],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            env=environ,
-            bufsize=1,
-            universal_newlines=True
-        )
-        while True:
-            line = process.stdout.readline()
-            if line != '':
-                print(line.rstrip())
-            else:
-                break
-        process.wait()
-        sys.exit(process.returncode)
-
+        
 
 main.add_command(publish)
-main.add_command(gui)
