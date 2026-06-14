@@ -108,10 +108,6 @@ from .logic import (
     deregister_test,
     registered_test,
 
-    register_gui,
-    registered_guis,
-    deregister_gui,
-
     default_test as __default_test,
 )
 
@@ -227,10 +223,6 @@ __all__ = [
     "register_test",
     "deregister_test",
     "registered_test",
-
-    "register_gui",
-    "registered_guis",
-    "deregister_gui",
 
     "plugins_by_family",
     "plugins_by_host",
