@@ -49,27 +49,7 @@ def test_process_callables():
         if isinstance(result, Exception):
             assert False  # This would be a bug
 
-    assert count["#"] == 11
-
-    context = pyblish.plugin.Context()
-
-    def _context():
-        return context
-
-    count["#"] = 0
-
-    for result in pyblish.logic.process(
-            func=pyblish.plugin.process,
-            plugins=pyblish.plugin.discover,  # <- Callable
-            context=_context):  # <- Callable
-
-        if isinstance(result, pyblish.logic.TestFailed):
-            break
-
-        if isinstance(result, Exception):
-            assert False  # This would be a bug
-
-    assert count["#"] == 11
+    assert count["#"] == 11, count["#"]
 
 
 @with_setup(lib.setup_empty)

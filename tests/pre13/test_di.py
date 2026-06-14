@@ -150,7 +150,7 @@ def test_occurence():
         plugins=pyblish.api.discover(),
         context=context))
 
-    assert count["#"] == 4
+    assert count["#"] == 4, count["#"]
 
 
 @with_setup(lib.setup_empty)
@@ -248,7 +248,7 @@ def test_test_failure():
         plugins=pyblish.api.discover(),
         context=context))
 
-    assert len(triggered) == 1
+    assert len(triggered) == 1, triggered
     assert type(triggered[0]).id == ValidateFailure.id
     assert isinstance(results[-1], Exception)
 
