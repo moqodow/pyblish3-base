@@ -384,14 +384,14 @@ def process(func, plugins, context, test=None):
         args = inspect.getfullargspec(plugin.process).args
         instances = instances_by_plugin(context, plugin)
 
+        # Limit processing to plug-ins with an available instance
+        if not instances and "*" not in plugin.families:
+            continue
+
+        if instance is None and "instance" in args:
+            continue
+
         if not test(**vars):
-            # Limit processing to plug-ins with an available instance
-            if not instances and "*" not in plugin.families:
-                continue
-
-            if instance is None and "instance" in args:
-                continue
-
             try:
                 result = func(plugin, context, instance)
             except Exception as exc:
