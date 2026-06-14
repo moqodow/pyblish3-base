@@ -35,7 +35,7 @@ from . import (
 )
 
 from . import lib
-from .vendor import iscompatible
+from . import iscompatible
 
 
 log = logging.getLogger("pyblish.plugin")
