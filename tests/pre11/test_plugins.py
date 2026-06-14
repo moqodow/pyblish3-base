@@ -173,7 +173,7 @@ def test_inmemory_plugins():
     context = pyblish.api.Context()
     for result in pyblish.logic.process(
             func=pyblish.plugin.process,
-            plugins=pyblish.api.discover,
+            plugins=pyblish.api.discover(),
             context=context):
         assert result["plugin"].id == InMemoryPlugin.id
 

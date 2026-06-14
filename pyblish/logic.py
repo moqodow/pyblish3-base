@@ -4,6 +4,7 @@ import os
 import sys
 import logging
 import traceback
+import inspect
 
 from . import _registered_test, lib
 from .plugin import (
@@ -338,3 +339,74 @@ def Iterator(plugins, context, state=None, targets=None):
 
         else:
             yield plugin, None
+
+
+def process(func, plugins, context, test=None):
+    """Primary processing logic
+
+    Takes data as input, and performs logical operations on 
+    them until the currently registered test fails.
+
+    Arguments:
+        func (callable): Callable taking three arguments;
+             plugin(Plugin), context(Context) and optional
+             instance(Instance). Each must provide a matching
+             interface to their corresponding objects.
+        plugins (list): Plug-ins to process. If a
+            callable is provided, the return value is used
+            as plug-ins. It is called with no arguments.
+        context (Context): Context whose instances
+            are to be processed. If a callable is provided,
+            the return value is used as context. It is called
+            with no arguments.
+        test (callable, optional): Provide custom test, defaults
+            to the currently registered test.
+
+    Yields:
+        A result per complete process. If test fails,
+        a TestFailed exception is returned, containing the
+        variables used in the test. Finally, any exception
+        thrown by `func` is yielded. Note that this is
+        considered a bug in *your* code as you are the one
+        supplying it.
+
+    """
+    
+    test = test or registered_test()
+
+    vars = {
+        "nextOrder": None,
+        "ordersWithError": list()
+    }
+
+    for plugin, instance in Iterator(plugins, context):
+        vars["nextOrder"] = plugin.order
+        args = inspect.getfullargspec(plugin.process).args
+        instances = instances_by_plugin(context, plugin)
+
+        # Limit processing to plug-ins with an available instance
+        if not instances and "*" not in plugin.families:
+            continue
+
+        if instance is None and "instance" in args:
+            continue
+
+        if not test(**vars):
+            try:
+                result = func(plugin, context, instance)
+            except Exception as exc:
+                # Any exception occuring within the function
+                # you pass is yielded, you are expected to
+                # handle it.
+                yield exc
+
+            else:
+                # Make note of the order at which
+                # the potential error error occured.
+                if result["error"]:
+                    if plugin.order not in vars["ordersWithError"]:
+                        vars["ordersWithError"].append(plugin.order)
+                yield result
+        else:
+            yield TestFailed(test(**vars), vars)
+            break
