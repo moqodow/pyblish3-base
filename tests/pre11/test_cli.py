@@ -7,7 +7,7 @@ import pyblish.api
 
 from . import lib
 
-from pyblish.vendor.click.testing import CliRunner
+from click.testing import CliRunner
 from nose2.tools.decorators import (
     with_setup,
     with_teardown
